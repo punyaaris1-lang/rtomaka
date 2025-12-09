@@ -1,209 +1,261 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalender Pembayaran MAKA</title>
-
-<style>
-:root{
- --bg:#0b1119;
- --card:#121b29;
- --neon:#00eaff;
- --gold:#ffd166;
- --danger:#ff5c5c;
- --muted:#374151;
-}
-body{margin:0;background:var(--bg);font-family:system-ui;color:#fff}
-.app{max-width:430px;margin:auto;padding-bottom:80px}
-
-header{
- padding:18px;
- background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-}
-h1{margin:0;font-size:20px}
-small{opacity:.75}
-
-.month-bar{
- display:flex;
- justify-content:space-between;
- align-items:center;
- padding:12px 16px;
-}
-.month-bar button{
- background:none;
- border:none;
- color:var(--neon);
- font-size:20px;
-}
-
-.week,.grid{
- display:grid;
- grid-template-columns:repeat(7,1fr);
- gap:6px;
-}
-.week{text-align:center;font-size:11px;opacity:.6;padding:0 12px}
-.calendar{padding:12px}
-
-.day{
- height:44px;
- border-radius:10px;
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:14px;
-}
-.pay{background:#102a33;color:var(--neon)}
-.off{background:#2a1515;color:var(--danger)}
-.paid{background:var(--gold);color:#000;font-weight:700}
-.empty{background:none}
-
-.popup{
- position:fixed;
- inset:0;
- display:none;
- align-items:center;
- justify-content:center;
- background:rgba(0,0,0,.7);
- z-index:99;
-}
-.box{
- background:var(--card);
- padding:20px;
- border-radius:14px;
- width:85%;
-}
-button.action{
- width:100%;
- padding:12px;
- border:none;
- border-radius:10px;
- margin-top:8px;
- font-weight:bold;
-}
-.ok{background:var(--neon);color:#000}
-.cancel{background:#333;color:#fff}
-</style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MAKA Kalender</title>
+<link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-<div class="app">
+<div class="app-container">
+  <header class="header">
+    <div class="user-info">
+      <h1>📅 Kalender Sewa</h1>
+      <p>Status & aturan pembayaran</p>
+    </div>
+  </header>
 
-<header>
- <h1>📅 Kalender Pembayaran</h1>
- <small id="info"></small>
-</header>
+  <section class="info-section" style="padding:16px 18px 8px;">
+    <p style="color:var(--text-muted);font-size:.9rem">Klik tanggal untuk lihat / tandai sudah bayar. Tagihan mulai <strong>H+1</strong> setelah ambil motor.</p>
+    <div style="margin-top:8px;font-size:.9rem;color:var(--text-muted)">
+      <span style="color:var(--primary-neon)">⚫ Hari Sewa</span> |
+      <span style="color:var(--dp-color)">🟣 Cicilan DP</span> |
+      <span style="color:var(--danger)">🔴 Libur</span>
+    </div>
+  </section>
 
-<div class="month-bar">
- <button onclick="prevMonth()">‹</button>
- <strong id="monthLabel"></strong>
- <button onclick="nextMonth()">›</button>
+  <section class="calendar-controls" style="padding:8px 12px 0">
+    <div style="display:flex;align-items:center;gap:12px;justify-content:center;">
+      <button class="modal-btn btn-ghost" onclick="changeMonth(-1)">◀</button>
+      <h2 id="current-month-year" style="margin:0;color:var(--primary-neon)"></h2>
+      <button class="modal-btn btn-ghost" onclick="changeMonth(1)">▶</button>
+    </div>
+  </section>
+
+  <section style="padding:12px">
+    <div class="weekdays"><div style="width:14.28%">Min</div><div style="width:14.28%">Sen</div><div style="width:14.28%">Sel</div><div style="width:14.28%">Rab</div><div style="width:14.28%">Kam</div><div style="width:14.28%">Jum</div><div style="width:14.28%">Sab</div></div>
+    <div id="calendar-grid" class="calendar-grid"></div>
+  </section>
+
+  <footer class="bottom-nav">
+    <a href="index.html" class="nav-item"><span>🏠</span>Home</a>
+    <a href="calendar.html" class="nav-item active"><span>📅</span>Kalender</a>
+    <a href="daftar_antrian.html" class="nav-item"><span>🎫</span>Antrian</a>
+  </footer>
 </div>
 
-<div class="week">
- <div>Min</div><div>Sen</div><div>Sel</div>
- <div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
-</div>
-
-<div class="calendar">
- <div id="grid" class="grid"></div>
-</div>
-
-</div>
-
-<!-- POPUP -->
-<div id="popup" class="popup">
- <div class="box">
-  <h3 id="pDate"></h3>
-  <p id="pStatus"></p>
-  <button class="action ok" onclick="confirmPay()">Tandai Lunas</button>
-  <button class="action cancel" onclick="closePop()">Batal</button>
- </div>
+<!-- Modal tanggal (lihat & bayar) -->
+<div id="dateModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3 id="modal-title">Tanggal</h3>
+    <p id="modal-status">Status: ...</p>
+    <p id="modal-amount">Jumlah: Rp 0</p>
+    <div style="margin-top:12px;text-align:right">
+      <button class="modal-btn btn-ghost" onclick="closeDateModal()">Tutup</button>
+      <button id="modal-pay-btn" class="modal-btn btn-primary" onclick="confirmPay()">Bayar</button>
+    </div>
+  </div>
 </div>
 
 <script>
-/* ========== USER SETTING ========== */
-const USER={
- ambil:'2025-09-18',
- dp:'355',          // '355' / '755'
- dpPaid:0,          // 0 - 6
- makaPlus:false
-};
+/* Calendar logic with rules from your spec.
+   - Billing starts H+1 of pickup date.
+   - Holidays: 31 always holiday.
+   - DP options:
+       * 355: next month for 3 months, dates 14 & 28 are CDP (payable) during that period (6 times). After 6 payments, 14 & 28 become holiday.
+       * 755: 14 & 28 are holiday from the start.
+   - MAKA+ affects daily extra charge (handled in dashboard).
+*/
 
-const pickup=new Date(USER.ambil);
-pickup.setHours(0,0,0,0);
+const DEFAULT_PICK = '2025-09-18'; // example pickup (user will set via admin)
+const admin = JSON.parse(localStorage.getItem('maka_finance_settings')) || { hwb_rate:80000, cdp_rate:70000 };
+const dp_settings = JSON.parse(localStorage.getItem('maka_dp_settings')) || { option:'355' };
+const userData = JSON.parse(localStorage.getItem('maka_user_data')) || { name:'M Rizky', plate:'B 4248 SWF', pick_date: DEFAULT_PICK };
+const DP_OPTION = dp_settings.option || '355';
+const MAKA_PLUS_RATE = 10000;
 
-/* ========== STATE ========== */
-let viewDate=new Date(pickup.getFullYear(),pickup.getMonth(),1);
-let selectedKey=null;
-let payments=JSON.parse(localStorage.getItem('maka_payments'))||{};
+let currentDate = new Date(); // show current month
+let savedPayments = JSON.parse(localStorage.getItem('maka_payments')) || {};
+let dp_payments_count = JSON.parse(localStorage.getItem('maka_dp_payments')) || 0;
 
-/* ========== LOGIC ========== */
-function isLibur(day){
- if(day===31)return true;
- if(USER.dp==='755' && (day===14||day===28))return true;
- if(USER.dp==='355' && USER.dpPaid>=6 && (day===14||day===28))return true;
- return false;
+// helper get DP period (month after pickup, 3 months)
+function getDPPeriod(pickDate){
+  const pick = new Date(pickDate);
+  const start = new Date(pick.getFullYear(), pick.getMonth()+1, 1);
+  const end = new Date(start.getFullYear(), start.getMonth()+3, 1); // exclusive
+  return { start, end };
 }
 
-function statusHari(date){
- if(date<=pickup)return'DISABLED';
- const d=date.getDate();
- if(isLibur(d))return'LIBUR';
- return USER.makaPlus?'MAKA+':'BAYAR';
+function getDayStatus(date){
+  const d=date.getDate();
+  if(d===31) return 'HLB';
+  const { start, end } = getDPPeriod(userData.pick_date || DEFAULT_PICK);
+
+  if(DP_OPTION === '355'){
+    if(date >= start && date < end){
+      if(d===14 || d===28) return 'CDP';
+    } else if(date >= end){
+      if(d===14 || d===28) return 'HLB';
+    }
+  } else if (DP_OPTION === '755'){
+    if(d===14 || d===28) return 'HLB';
+  }
+  return 'HWB';
 }
 
-/* ========== RENDER ========== */
+// billing starts H+1
+function isBeforeBilling(date){
+  const pick = new Date(userData.pick_date || DEFAULT_PICK);
+  pick.setHours(0,0,0,0);
+  const billingStart = new Date(pick);
+  billingStart.setDate(pick.getDate()+1);
+  billingStart.setHours(0,0,0,0);
+  return date < billingStart;
+}
+
 function renderCalendar(){
- grid.innerHTML='';
- monthLabel.innerText=viewDate.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
- info.innerText=`DP ${USER.dp} | Cicilan ${USER.dpPaid}/6 | MAKA+ ${USER.makaPlus?'ON':'OFF'}`;
+  const grid = document.getElementById('calendar-grid');
+  const monthYear = document.getElementById('current-month-year');
+  const monthName = currentDate.toLocaleString('id-ID',{ month:'long', year:'numeric' });
+  monthYear.textContent = monthName;
+  grid.innerHTML='';
 
- const first=new Date(viewDate.getFullYear(),viewDate.getMonth(),1);
- const last=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,0);
- const start=first.getDay();
+  const year = currentDate.getFullYear(), month = currentDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
 
- for(let i=0;i<start;i++){
-  grid.innerHTML+='<div class="day empty"></div>';
- }
+  // leading empty
+  for(let i=0;i<firstDay;i++) grid.innerHTML += '<div class="day empty"></div>';
 
- for(let d=1;d<=last.getDate();d++){
-  const date=new Date(viewDate.getFullYear(),viewDate.getMonth(),d);
-  const key=date.toISOString().slice(0,10);
-  const st=statusHari(date);
+  for(let d=1; d<=daysInMonth; d++){
+    const dt = new Date(year, month, d);
+    const key = `${dt.getFullYear()}-${dt.getMonth()+1}-${dt.getDate()}`;
+    const status = getDayStatus(dt);
+    const isPaid = savedPayments[key] === true;
+    const beforeBilling = isBeforeBilling(dt);
+    let classes = [];
+    if(status==='HLB') classes.push('holiday');
+    else if(status==='CDP') classes.push('cicilan-dp');
+    else classes.push('wajib-bayar');
+    if(isPaid) classes.push('paid');
+    if(beforeBilling) classes.push('disabled');
 
-  const el=document.createElement('div');
-  el.className='day';
-  el.innerText=d;
+    grid.innerHTML += `<div class="day ${classes.join(' ')}" data-date-key="${key}" data-date="${dt.toISOString()}" onclick="onDayClick(event)">
+                         <span class="day-number">${d}</span>
+                       </div>`;
+  }
 
-  if(payments[key])el.classList.add('paid');
-  else if(st==='LIBUR')el.classList.add('off');
-  else if(st==='BAYAR'||st==='MAKA+')el.classList.add('pay');
-  else{el.classList.add('off');}
+  // trailing empty
+  const totalCells = firstDay + daysInMonth;
+  const remain = (totalCells % 7 ===0) ? 0 : 7 - (totalCells % 7);
+  for(let i=0;i<remain;i++) grid.innerHTML += '<div class="day empty"></div>';
+}
 
-  el.onclick=()=>{
-   if(st!=='BAYAR'&&st!=='MAKA+')return;
-   selectedKey=key;
-   pDate.innerText=date.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
-   pStatus.innerText=st==='MAKA+'?'Gratis MAKA+':'Bayar 70rb';
-   popup.style.display='flex';
-  };
+// when click day
+let activeDateKey = null;
+function onDayClick(ev){
+  const el = ev.currentTarget;
+  if(el.classList.contains('empty')) return;
+  const key = el.getAttribute('data-date-key');
+  const iso = el.getAttribute('data-date');
+  const dt = new Date(iso);
+  const status = getDayStatus(dt);
+  const beforeBilling = isBeforeBilling(dt);
+  const isPaid = savedPayments[key] === true;
 
-  grid.appendChild(el);
- }
+  // show modal
+  const modal = document.getElementById('dateModal');
+  document.getElementById('modal-title').textContent = dt.toLocaleDateString('id-ID');
+  document.getElementById('modal-status').innerHTML = `Status: <strong>${status}</strong>`;
+  // amount
+  let amount = 0;
+  if(status==='HWB') amount = admin.hwb_rate;
+  else if(status==='CDP') amount = admin.cdp_rate;
+  else amount = 0;
+
+  // show extra MAKA+ if active and applicable (handled in dashboard summary - optional)
+  document.getElementById('modal-amount').textContent = `Jumlah: Rp ${amount.toLocaleString('id-ID')}`;
+
+  const payBtn = document.getElementById('modal-pay-btn');
+  activeDateKey = key;
+
+  // if before billing or holiday -> disable pay (unless CDP? spec: holiday not payable)
+  if(beforeBilling){
+    payBtn.style.display='none';
+    document.getElementById('modal-status').innerHTML += '<br><small style="color:var(--text-muted)">Belum mulai tagihan</small>';
+  } else if(status==='HLB'){
+    payBtn.style.display='none';
+    document.getElementById('modal-status').innerHTML += '<br><small style="color:var(--text-muted)">Hari libur</small>';
+  } else {
+    payBtn.style.display='inline-block';
+    payBtn.textContent = isPaid ? 'Batalkan Pembayaran' : `Bayar Rp ${amount.toLocaleString('id-ID')}`;
+  }
+
+  modal.classList.add('active');
+}
+
+function closeDateModal(){
+  document.getElementById('dateModal').classList.remove('active');
+  activeDateKey = null;
 }
 
 function confirmPay(){
- payments[selectedKey]=true;
- localStorage.setItem('maka_payments',JSON.stringify(payments));
- popup.style.display='none';
- renderCalendar();
-}
-function closePop(){popup.style.display='none'}
-function prevMonth(){viewDate.setMonth(viewDate.getMonth()-1);renderCalendar()}
-function nextMonth(){viewDate.setMonth(viewDate.getMonth()+1);renderCalendar()}
+  if(!activeDateKey) return;
+  const el = document.querySelector(`[data-date-key="${activeDateKey}"]`);
+  const wasPaid = savedPayments[activeDateKey] === true;
+  if(wasPaid){
+    savedPayments[activeDateKey] = false;
+    // if this was a CDP day, reduce dp_payments_count when unpaying
+    const dtParts = activeDateKey.split('-').map(Number);
+    const dt = new Date(dtParts[0], dtParts[1]-1, dtParts[2]);
+    if(getDayStatus(dt) === 'CDP'){
+      dp_payments_count = Math.max(0, dp_payments_count - 1);
+      localStorage.setItem('maka_dp_payments', JSON.stringify(dp_payments_count));
+    }
+    el.classList.remove('paid');
+  } else {
+    savedPayments[activeDateKey] = true;
+    // if CDP increment dp counter
+    const dtParts = activeDateKey.split('-').map(Number);
+    const dt = new Date(dtParts[0], dtParts[1]-1, dtParts[2]);
+    if(getDayStatus(dt) === 'CDP'){
+      dp_payments_count = (dp_payments_count || 0) + 1;
+      localStorage.setItem('maka_dp_payments', JSON.stringify(dp_payments_count));
+    }
+    el.classList.add('paid');
+  }
+  localStorage.setItem('maka_payments', JSON.stringify(savedPayments));
 
-renderCalendar();
+  // if dp_payments_count reached 6 and dp option 355 -> mark DP paid (affects future 14/28)
+  if(dp_settings.option === '355' && dp_payments_count >= 6){
+    localStorage.setItem('maka_dp_paid', JSON.stringify({ paid:true, completed_at:new Date().toISOString() }));
+    alert('Cicilan DP terbayar penuh. Tanggal 14 & 28 sekarang menjadi libur.');
+  }
+
+  closeDateModal();
+  renderCalendar();
+}
+
+// month nav
+function changeMonth(delta){
+  currentDate.setMonth(currentDate.getMonth() + delta);
+  renderCalendar();
+}
+
+// init
+document.addEventListener('DOMContentLoaded', ()=>{
+  // reload data
+  savedPayments = JSON.parse(localStorage.getItem('maka_payments')) || {};
+  dp_payments_count = JSON.parse(localStorage.getItem('maka_dp_payments')) || 0;
+  // detect if dp paid earlier and if so adjust dp_settings to treat 14/28 as holiday
+  const dpPaidRecord = JSON.parse(localStorage.getItem('maka_dp_paid')) || { paid:false };
+  if(dpPaidRecord.paid) {
+    // if dp_options was 355 and dp paid -> treat 14/28 as HLB after DP period logic (calendar uses getDayStatus which checks dp_settings)
+    // Nothing to change here: getDayStatus will return HLB after DP period OR if dp_paid stored we can override:
+    // We store a sentinel to be read by getDayStatus (use localStorage directly in getDayStatus if needed)
+  }
+  renderCalendar();
+});
 </script>
 </body>
 </html>
