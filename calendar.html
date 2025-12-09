@@ -2,214 +2,89 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Kalender Pembayaran</title>
-
-<style>
-:root{
- --neon:#00eaff;
- --gold:#ffe600;
- --red:#ff4d4d;
- --bg:#06090f;
- --card:#0c1220;
-}
-
-*{box-sizing:border-box}
-
-body{
- margin:0;
- background:var(--bg);
- color:#fff;
- font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-}
-
-.app{
- max-width:420px;
- margin:auto;
- min-height:100vh;
- padding-bottom:90px;
-}
-
-/* ===== HEADER ===== */
-.header{
- padding:20px;
- border-bottom:1px solid rgba(255,255,255,.08);
-}
-
-.header h1{
- margin:0;
- font-size:20px;
- color:var(--neon);
-}
-
-/* ===== MONTH NAV ===== */
-.month-nav{
- display:flex;
- align-items:center;
- justify-content:space-between;
- padding:16px 20px;
-}
-
-.month-nav button{
- background:none;
- border:0;
- color:var(--neon);
- font-size:20px;
-}
-
-/* ===== CALENDAR ===== */
-.weekdays, .calendar{
- display:grid;
- grid-template-columns:repeat(7,1fr);
- gap:6px;
- padding:0 16px;
-}
-
-.weekdays span{
- text-align:center;
- font-size:12px;
- opacity:.6;
-}
-
-.day{
- height:44px;
- border-radius:10px;
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:14px;
- cursor:pointer;
- border:1px solid rgba(255,255,255,.06);
-}
-
-/* STATUS BY COLOR ONLY */
-.wajib{ background:#081b24; color:var(--neon); }
-.dp{ background:#241836; color:#caa7ff; }
-.libur{ background:#2a1414; color:var(--red); }
-.paid{
- background:var(--gold);
- color:#000;
- font-weight:600;
- box-shadow:0 0 10px rgba(255,230,0,.6);
-}
-.disabled{
- opacity:.3;
- pointer-events:none;
-}
-.empty{background:transparent;border:none}
-
-/* ===== BOTTOM NAV ===== */
-.bottom-nav{
- position:fixed;
- bottom:0; left:0; right:0;
- height:70px;
- display:flex;
- justify-content:space-around;
- align-items:center;
- background:linear-gradient(180deg,#05060a,#0b1020);
- border-top:1px solid rgba(255,255,255,.08);
-}
-
-.bottom-nav a{
- color:#9bb0cd;
- text-decoration:none;
- font-size:11px;
- display:flex;
- flex-direction:column;
- align-items:center;
- gap:4px;
-}
-
-.bottom-nav span{font-size:20px}
-
-.active{
- color:var(--neon);
- text-shadow:0 0 8px rgba(0,234,255,.4);
-}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kalender</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 <div class="app">
 
-<header class="header">
- <h1>Kalender Pembayaran</h1>
-</header>
+  <!-- HEADER -->
+  <header class="calendar-header">
+    <h1>Kalender</h1>
+    <p>Jadwal & Pembayaran</p>
+  </header>
 
-<div class="month-nav">
- <button onclick="prevMonth()">‹</button>
- <div id="monthLabel"></div>
- <button onclick="nextMonth()">›</button>
+  <!-- MONTH NAV -->
+  <div class="calendar-nav">
+    <button onclick="changeMonth(-1)">‹</button>
+    <div id="monthYear"></div>
+    <button onclick="changeMonth(1)">›</button>
+  </div>
+
+  <!-- DAYS -->
+  <div class="calendar-week">
+    <div>Min</div><div>Sen</div><div>Sel</div>
+    <div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+  </div>
+
+  <!-- CALENDAR GRID -->
+  <div class="calendar-grid" id="calendar"></div>
+
 </div>
 
-<div class="weekdays">
- <span>Min</span><span>Sen</span><span>Sel</span>
- <span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span>
+<!-- BOTTOM NAV -->
+<div class="nav">
+  <a href="lokasi_fc.html"><span>⚡</span>FC</a>
+  <a href="index.html"><span>🏠</span>Home</a>
+  <a href="daftar_antrian.html"><span>🎫</span>Antrian</a>
 </div>
-
-<div id="calendar" class="calendar"></div>
-
-</div>
-
-<footer class="bottom-nav">
- <a href="dashboard.html"><span>🏠</span>Home</a>
- <a href="calendar.html" class="active"><span>📅</span>Kalender</a>
- <a href="admin.html"><span>💳</span>Admin</a>
-</footer>
 
 <script>
-let current=new Date();
+const calendarEl = document.getElementById("calendar");
+const monthYearEl = document.getElementById("monthYear");
 
-/* SIMULASI SETTING USER */
-const ambilMotor=new Date('2025-09-18');
-const dpOpsi='355'; // 355 or 755
-const sudahBayar={};
+let date = new Date();
 
-function render(){
- const cal=document.getElementById('calendar');
- const label=document.getElementById('monthLabel');
- cal.innerHTML='';
+function renderCalendar() {
+  calendarEl.innerHTML = "";
 
- label.innerText=current.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+  const year = date.getFullYear();
+  const month = date.getMonth();
 
- const y=current.getFullYear();
- const m=current.getMonth();
- const first=new Date(y,m,1).getDay();
- const total=new Date(y,m+1,0).getDate();
+  monthYearEl.innerText = date.toLocaleDateString("id-ID", {
+    month: "long",
+    year: "numeric"
+  });
 
- for(let i=0;i<first;i++)
-  cal.innerHTML+=`<div class="day empty"></div>`;
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
 
- for(let d=1; d<=total; d++){
-  const date=new Date(y,m,d);
-  let cls='day';
-  let tag=true;
+  for (let i = 0; i < firstDay; i++) {
+    calendarEl.innerHTML += `<div class="empty"></div>`;
+  }
 
-  if(date<=ambilMotor){cls+=' disabled'; tag=false}
-  else if(d===31) cls+=' libur';
-  else if(dpOpsi==='355'&&(d===14||d===28)
-       && date<new Date(ambilMotor.getFullYear(),ambilMotor.getMonth()+3))
-        cls+=' dp';
-  else if((d===14||d===28)) cls+=' libur';
-  else cls+=' wajib';
+  for (let d = 1; d <= lastDate; d++) {
+    const today =
+      d === new Date().getDate() &&
+      month === new Date().getMonth() &&
+      year === new Date().getFullYear();
 
-  if(sudahBayar[`${y}-${m}-${d}`]) cls+=' paid';
-
-  cal.innerHTML+=`<div class="${cls}" onclick="${tag?'pay('+d+')':''}">${d}</div>`;
- }
-
+    calendarEl.innerHTML += `
+      <div class="day ${today ? "today" : ""}">
+        ${d}
+      </div>`;
+  }
 }
 
-function pay(d){
- const k=`${current.getFullYear()}-${current.getMonth()}-${d}`;
- sudahBayar[k]=true;
- render();
+function changeMonth(step) {
+  date.setMonth(date.getMonth() + step);
+  renderCalendar();
 }
 
-function prevMonth(){current.setMonth(current.getMonth()-1);render()}
-function nextMonth(){current.setMonth(current.getMonth()+1);render()}
-
-render();
+renderCalendar();
 </script>
+
 </body>
 </html>
