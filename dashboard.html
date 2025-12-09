@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAKA Dashboard</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+<div class="app-container">
+
+<header class="header">
+  <h1 id="username">Halo</h1>
+  <p>Total Tunggakan</p>
+
+  <div class="hero-tunggakan">
+    <span id="total">Rp 0</span>
+    <small id="hari">0 Hari</small>
+  </div>
+</header>
+
+<footer class="bottom-nav">
+ <a href="calendar.html">📅</a>
+ <a href="dashboard.html" class="active">🏠</a>
+ <a href="admin_finance.html">⚙️</a>
+</footer>
+
+</div>
+
+<script>
+/* ===== AMBIL DATA MASTER ===== */
+const finance =
+JSON.parse(localStorage.getItem('maka_finance_settings')) || {
+ pickup_date:'2025-09-18',
+ dp_type:'355',
+ dp_paid_count:0,
+ hwb_rate:70000,
+ maka_plus_active:false,
+ maka_plus_rate:10000
+};
+
+const payments =
+JSON.parse(localStorage.getItem('maka_payments')) || {};
+
+const pickup = new Date(finance.pickup_date);
+pickup.setHours(0,0,0,0);
+
+/* ===== LOGIC STATUS ===== */
+function isLibur(date){
+ const d=date.getDate();
+ if(d===31)return true;
+ if(finance.dp_type==='755' && (d===14||d===28))return true;
+ if(finance.dp_type==='355' && finance.dp_paid_count>=6 && (d===14||d===28))return true;
+ return false;
+}
+
+function calc(){
+ let total=0,days=0;
+ const today=new Date();today.setHours(0,0,0,0);
+ let cur=new Date(pickup); cur.setDate(cur.getDate()+1);
+
+ while(cur<=today){
+  const k=cur.toISOString().slice(0,10);
+  if(!payments[k] && !isLibur(cur)){
+    total+=finance.maka_plus_active?finance.maka_plus_rate:finance.hwb_rate;
+    days++;
+  }
+  cur.setDate(cur.getDate()+1);
+ }
+ return{total,days};
+}
+
+const r=calc();
+total.innerText=`Rp ${r.total.toLocaleString('id-ID')}`;
+hari.innerText=`${r.days} Hari`;
+</script>
+</body>
+</html>
