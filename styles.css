@@ -1,61 +1,89 @@
-/* ===============================
-   MAKA PREMIUM UI – LIGHT MODE (PUTIH)
-   File: styles.css
-================================ */
+/* styles.css - MAKA PREMIUM CORE THEME (level 3) */
+:root{
+  --bg-main:#06090f;
+  --card-bg:rgba(18,26,44,0.72);
+  --glass-border:rgba(255,255,255,.06);
 
-:root {
-  --bg-main: #f5f6f8; 
-  --card-bg: rgba(255, 255, 255, 0.95); 
-  --glass-border: rgba(0, 0, 0, 0.1); 
-
-  --primary-neon: #007aff; /* Biru terang untuk aksen */
-  --paid-green: #00a049; /* Hijau untuk Lunas */
-  --holiday-color: #e63946; /* Merah untuk Libur/Tunggakan */
-  --dp-color: #8e44ad; /* Ungu untuk DP Cicil */
-
-  --text-main: #222;
-  --text-secondary: #7f8c8d;
+  --primary-neon:#00eaff;
+  --accent:#ffcc55;
+  --danger:#ff5c5c;
+  --dp-color:#cc99ff;
+  --text-main:#eaf1ff;
+  --text-muted:#8fa3c7;
+  --maka-plus:#ffd166;
+  --safe-wa:#25D366;
+  --nav-height:74px;
 }
 
-/* RESET */
-* {
-  box-sizing: border-box;
-  font-family: "Inter", system-ui, sans-serif;
-  margin: 0;
-  padding: 0;
-}
+/* Reset & base */
+*{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;transition:all .18s ease}
+html,body{height:100%;margin:0;background:radial-gradient(circle at 10% 10%, rgba(0,234,255,.04), transparent), linear-gradient(180deg,#050712,#071122);color:var(--text-main)}
+a{color:inherit;text-decoration:none}
 
-body {
-  background: var(--bg-main); 
-  color: var(--text-main);
-  padding-bottom: 90px;
-}
+/* App container */
+.app-container{max-width:420px;margin:0 auto;padding-bottom:calc(var(--nav-height)+20px);min-height:100vh}
 
-.app-container {
-  max-width: 420px;
-  margin: auto;
-  padding-bottom: 130px; 
-}
+/* Header */
+.header{padding:20px 18px 12px;position:relative}
+.user-info h1{font-size:1.25rem;margin:0;color:var(--primary-neon);letter-spacing:.2px;font-weight:700}
+.user-info p{margin-top:6px;color:var(--text-muted);font-size:.85rem}
 
-/* Card General */
-.card {
-  background: var(--card-bg);
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-  border: 1px solid var(--glass-border);
-}
+/* Hero card */
+.hero-tunggakan{margin-top:14px;background:linear-gradient(135deg, rgba(0,234,255,.06), rgba(18,26,44,.7));backdrop-filter:blur(10px);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--glass-border);box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.hero-tunggakan h3{margin:0;font-size:.75rem;color:var(--primary-neon);text-transform:uppercase;letter-spacing:1px}
+.hero-tunggakan p{margin:.25rem 0 0;color:var(--text-muted);font-size:.78rem}
+.hero-tunggakan-value{ text-align:right }
+.hero-tunggakan-value span{display:block;font-weight:800;font-size:1.25rem;color:var(--accent)}
+.hero-tunggakan-value small{display:block;color:var(--text-muted);font-size:.8rem;margin-top:4px}
 
-/* LOGIN FORM */
-.login-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    background: var(--bg-main);
+/* Divider */
+.futuristic-divider{height:1px;margin:18px 0;background:linear-gradient(to right,transparent,var(--primary-neon),transparent);opacity:.45}
+
+/* Icon grid */
+.icon-grid-section{padding:0 18px 18px}
+.icon-grid-section h2{font-size:.95rem;margin:0 0 12px;color:var(--primary-neon)}
+.icon-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.icon-item{background:var(--card-bg);border-radius:12px;padding:14px 8px;text-align:center;border:1px solid var(--glass-border);box-shadow:0 8px 20px rgba(0,0,0,.45);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:84px}
+.icon-item span{font-size:28px;margin-bottom:6px}
+.icon-item p{margin:0;font-size:.78rem;color:var(--text-muted);font-weight:700}
+.icon-item:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,234,255,.08)}
+
+/* SOS card accent */
+.sos-card{border:1px solid rgba(255,80,80,.35);box-shadow:0 6px 30px rgba(255,80,80,.06)}
+.sos-card span{color:var(--danger)}
+
+/* Bottom nav */
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;height:var(--nav-height);display:flex;justify-content:space-around;align-items:center;padding-bottom:env(safe-area-inset-bottom);background:linear-gradient(to top, rgba(4,6,12,.98), rgba(4,6,12,.9));backdrop-filter:blur(8px);border-top:1px solid rgba(255,255,255,.03);z-index:999;}
+.bottom-nav a{flex:1;text-align:center;color:var(--text-muted);font-size:.82rem;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:6px;padding:8px 6px}
+.bottom-nav a span{font-size:20px}
+.bottom-nav a.active{color:var(--primary-neon);text-shadow:0 0 8px rgba(0,234,255,.18)}
+.bottom-nav a.active span{filter:drop-shadow(0 0 8px rgba(0,234,255,.6))}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);justify-content:center;align-items:center;z-index:2000}
+.modal-overlay.active{display:flex}
+.modal-content{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border-radius:12px;padding:18px;min-width:260px;border:1px solid rgba(0,234,255,.08);box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.modal-content h3{margin:0 0 8px;color:var(--primary-neon)}
+.modal-btn{display:inline-block;padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+.btn-primary{background:linear-gradient(90deg,#00bfff,var(--primary-neon));color:#001;background-size:200% 100%}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.06);color:var(--text-main);margin-left:8px}
+
+/* Calendar small helpers */
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;padding:12px}
+.day{height:58px;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;position:relative}
+.day.empty{background:transparent;cursor:default}
+.day .day-number{font-weight:700}
+.day.disabled{opacity:.45;cursor:not-allowed;border:1px solid rgba(255,255,255,.02)}
+.day.holiday{background:rgba(255,80,80,.06);border:1px solid rgba(255,80,80,.12);color:var(--danger)}
+.day.wajib-bayar{background:linear-gradient(180deg, rgba(0,234,255,.03), rgba(18,26,44,.4));border:1px solid rgba(0,234,255,.06)}
+.day.cicilan-dp{background:linear-gradient(180deg, rgba(204,153,255,.03), rgba(18,26,44,.45));border:1px solid rgba(204,153,255,.06)}
+.day.paid{background:linear-gradient(90deg, rgba(255,255,0,.16), rgba(255,255,0,.06));border:1px solid rgba(255,255,0,.12);color:#0b0b0b}
+.day.temp-checked{outline:2px solid rgba(255,255,0,.22);box-shadow:0 6px 24px rgba(255,255,0,.05)}
+.weekdays{display:flex;gap:10px;padding:0 12px;color:var(--text-muted);font-weight:700}
+
+/* small screens adjustments */
+@media (max-width:420px){
+  .icon-item{min-height:86px;padding:12px}
+  .hero-tunggakan{padding:12px}
+  .bottom-nav a{font-size:.78rem}
 }
-.login-screen .card { width: 100%; max-width: 350px; }
-.login-screen h1 { font-size: 1.5em; margin-bottom: 20px; color: var(--primary-neon); }
-label { display: block; margin-top: 10px; margin-bottom: 5px; font-size: 0.
