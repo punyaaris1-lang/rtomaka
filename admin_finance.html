@@ -1,59 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin Finance Sultan</title>
-<style>
-body{background:#0b1119;color:#fff;font-family:system-ui}
-input,select,button{width:100%;padding:12px;margin-top:8px}
-</style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin Finance - Sultan</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<div class="app-container">
+  <header class="header">
+    <div class="user-info"><h1>Admin Finance (Sultan)</h1><p>Atur pickup, DP, tarif</p></div>
+  </header>
 
-<h2>⚙️ Admin Finance</h2>
+  <section style="padding:12px 18px">
+    <div style="background:var(--card-bg);padding:12px;border-radius:12px;border:1px solid var(--glass-border)">
+      <label style="font-size:.85rem;color:var(--text-muted)">Tanggal Ambil Motor</label>
+      <input id="pickDate" type="date" style="width:100%;padding:10px;border-radius:8px;margin-top:6px;border:1px solid rgba(255,255,255,.04);background:transparent;color:var(--text-main)">
 
-<label>Tanggal Ambil Motor</label>
-<input type="date" id="pickup">
+      <label style="font-size:.85rem;color:var(--text-muted);margin-top:12px;display:block">Opsi DP</label>
+      <select id="dpOption" style="width:100%;padding:10px;border-radius:8px;margin-top:6px;border:1px solid rgba(255,255,255,.04);background:transparent;color:var(--text-main)">
+        <option value="355">DP 355 (cicilan 70k x6)</option>
+        <option value="755">DP 755 (lunas - libur 14 & 28)</option>
+      </select>
 
-<label>Jenis DP</label>
-<select id="dp">
- <option value="355">DP 355</option>
- <option value="755">DP 755</option>
-</select>
+      <label style="font-size:.85rem;color:var(--text-muted);margin-top:12px;display:block">Tarif Harian (HWB)</label>
+      <input id="rateHwb" type="number" style="width:100%;padding:10px;border-radius:8px;margin-top:6px;border:1px solid rgba(255,255,255,.04);background:transparent;color:var(--text-main)">
 
-<label>Cicilan DP Terbayar</label>
-<input type="number" id="dpPaid" min="0" max="6">
+      <label style="font-size:.85rem;color:var(--text-muted);margin-top:12px;display:block">Tarif Cicilan DP (CDP)</label>
+      <input id="rateCdp" type="number" style="width:100%;padding:10px;border-radius:8px;margin-top:6px;border:1px solid rgba(255,255,255,.04);background:transparent;color:var(--text-main)">
 
-<label>Tarif Harian</label>
-<input type="number" id="rate">
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="modal-btn btn-primary" onclick="saveAdmin()">Simpan</button>
+        <button class="modal-btn btn-ghost" onclick="resetPayments()">Reset Payments</button>
+      </div>
 
-<label>MAKA+</label>
-<select id="maka">
- <option value="false">OFF</option>
- <option value="true">ON</option>
-</select>
+      <div id="adminStatus" style="margin-top:12px;color:var(--text-muted)"></div>
+    </div>
+  </section>
 
-<button onclick="save()">SIMPAN</button>
+  <footer class="bottom-nav">
+    <a href="index.html" class="nav-item"><span>🏠</span>Home</a>
+    <a href="calendar.html" class="nav-item"><span>📅</span>Kalender</a>
+    <a href="daftar_antrian.html" class="nav-item"><span>🎫</span>Antrian</a>
+  </footer>
+</div>
 
 <script>
-const f=JSON.parse(localStorage.getItem('maka_finance_settings'))||{};
-pickup.value=f.pickup_date||'';
-dp.value=f.dp_type||'355';
-dpPaid.value=f.dp_paid_count||0;
-rate.value=f.hwb_rate||70000;
-maka.value=String(f.maka_plus_active);
+function loadAdmin(){
+  const admin = JSON.parse(localStorage.getItem('maka_finance_settings')) || { hwb_rate:80000, cdp_rate:70000 };
+  const dp = JSON.parse(localStorage.getItem('maka_dp_settings')) || { option:'355' };
+  const user = JSON.parse(localStorage.getItem('maka_user_data')) || { pick_date:'2025-09-18' };
 
-function save(){
- localStorage.setItem('maka_finance_settings',JSON.stringify({
-  pickup_date:pickup.value,
-  dp_type:dp.value,
-  dp_paid_count:+dpPaid.value,
-  hwb_rate:+rate.value,
-  maka_plus_active:maka.value==='true',
-  maka_plus_rate:10000
- }));
- alert('TERSIMPAN');
+  document.getElementById('rateHwb').value = admin.hwb_rate;
+  document.getElementById('rateCdp').value = admin.cdp_rate;
+  document.getElementById('dpOption').value = dp.option || '355';
+  document.getElementById('pickDate').value = (user.pick_date || '2025-09-18');
+  document.getElementById('adminStatus').textContent = "Loaded settings dari localStorage.";
 }
+
+function saveAdmin(){
+  const h = Number(document.getElementById('rateHwb').value) || 80000;
+  const c = Number(document.getElementById('rateCdp').value) || 70000;
+  const dp = document.getElementById('dpOption').value;
+  const pick = document.getElementById('pickDate').value;
+
+  localStorage.setItem('maka_finance_settings', JSON.stringify({ hwb_rate:h, cdp_rate:c }));
+  localStorage.setItem('maka_dp_settings', JSON.stringify({ option:dp }));
+  let user = JSON.parse(localStorage.getItem('maka_user_data')) || {};
+  user.pick_date = pick;
+  localStorage.setItem('maka_user_data', JSON.stringify(user));
+
+  document.getElementById('adminStatus').textContent = "Disimpan. Perubahan berlaku langsung.";
+  alert('Settings disimpan.');
+}
+
+function resetPayments(){
+  if(confirm('Reset semua data pembayaran?')) {
+    localStorage.removeItem('maka_payments');
+    localStorage.removeItem('maka_dp_payments');
+    localStorage.removeItem('maka_dp_paid');
+    alert('Data pembayaran direset.');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadAdmin);
 </script>
 </body>
 </html>
