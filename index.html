@@ -1,36 +1,180 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MAKA App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAKA Dashboard</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #06090f;
-      color: #eaf1ff;
-    }
+<style>
+:root{
+  --bg:#06090f;
+  --card:#121a2c;
+  --neon:#00eaff;
+  --gold:#ffd369;
+  --text:#eaf1ff;
+  --muted:#8fa3c7;
+}
 
-    .app {
-      max-width: 420px;
-      margin: auto;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+*{box-sizing:border-box}
 
-    h1 {
-      font-size: 22px;
-    }
-  </style>
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#0c1222,#05080d);
+  color:var(--text);
+  font-family:system-ui,-apple-system,sans-serif;
+}
+
+.app{
+  max-width:420px;
+  margin:auto;
+  padding-bottom:90px;
+}
+
+/* ===== HEADER ===== */
+.header{
+  padding:20px;
+}
+
+.header h1{
+  margin:0;
+  font-size:20px;
+}
+
+.header p{
+  margin:4px 0 0;
+  font-size:13px;
+  color:var(--muted);
+}
+
+/* ===== HERO ===== */
+.hero{
+  margin-top:16px;
+  padding:16px;
+  border-radius:16px;
+  background:linear-gradient(135deg,rgba(0,234,255,.2),rgba(18,26,44,.8));
+  box-shadow:0 0 20px rgba(0,234,255,.15);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.hero h3{
+  margin:0;
+  font-size:11px;
+  letter-spacing:1px;
+  color:var(--neon);
+}
+
+.hero span{
+  font-size:22px;
+  font-weight:700;
+  color:var(--gold);
+}
+
+/* ===== MENU GRID ===== */
+.section{
+  padding:16px;
+}
+
+.section h2{
+  font-size:14px;
+  margin-bottom:12px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.item{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:14px 8px;
+  text-align:center;
+  font-size:12px;
+}
+
+.item span{
+  display:block;
+  font-size:26px;
+  margin-bottom:6px;
+}
+
+/* ===== BOTTOM NAV ===== */
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;right:0;
+  height:74px;
+  display:flex;
+  background:rgba(5,8,20,.95);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.nav a{
+  flex:1;
+  text-align:center;
+  text-decoration:none;
+  color:#7c8399;
+  font-size:11px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:6px;
+}
+
+.nav a span{
+  font-size:22px;
+}
+
+.nav a.active{
+  color:var(--neon);
+}
+</style>
 </head>
 
 <body>
-  <div class="app">
-    <h1>MAKA HTML — OK ✅</h1>
-  </div>
+<div class="app">
+
+  <header class="header">
+    <h1>Halo, Rizky 👋</h1>
+    <p>Plat Motor B 4248 SWF</p>
+
+    <div class="hero">
+      <div>
+        <h3>TUNGGAKAN</h3>
+        <p style="font-size:11px;color:var(--muted)">Perlu dibayar hari ini</p>
+      </div>
+      <span>Rp 0</span>
+    </div>
+  </header>
+
+  <section class="section">
+    <h2>✨ Fitur Premium</h2>
+
+    <div class="grid">
+      <div class="item"><span>📅</span>Kalender</div>
+      <div class="item"><span>🗒️</span>Riwayat</div>
+      <div class="item"><span>🎁</span>Gratisan</div>
+
+      <div class="item"><span>📰</span>Info</div>
+      <div class="item"><span>💡</span>Tips</div>
+      <div class="item"><span>🚨</span>ETLE</div>
+
+      <div class="item"><span>⚙️</span>Setting</div>
+      <div class="item"><span>⭐</span>MAKA+</div>
+      <div class="item"><span>🚑</span>SOS</div>
+    </div>
+  </section>
+
+</div>
+
+<footer class="nav">
+  <a class="active"><span>🏠</span>Home</a>
+  <a><span>⚡</span>FC</a>
+  <a><span>🎫</span>Antrian</a>
+</footer>
 </body>
 </html>
