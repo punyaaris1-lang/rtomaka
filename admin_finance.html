@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Finance Sultan</title>
+<style>
+body{background:#0b1119;color:#fff;font-family:system-ui}
+input,select,button{width:100%;padding:12px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<h2>⚙️ Admin Finance</h2>
+
+<label>Tanggal Ambil Motor</label>
+<input type="date" id="pickup">
+
+<label>Jenis DP</label>
+<select id="dp">
+ <option value="355">DP 355</option>
+ <option value="755">DP 755</option>
+</select>
+
+<label>Cicilan DP Terbayar</label>
+<input type="number" id="dpPaid" min="0" max="6">
+
+<label>Tarif Harian</label>
+<input type="number" id="rate">
+
+<label>MAKA+</label>
+<select id="maka">
+ <option value="false">OFF</option>
+ <option value="true">ON</option>
+</select>
+
+<button onclick="save()">SIMPAN</button>
+
+<script>
+const f=JSON.parse(localStorage.getItem('maka_finance_settings'))||{};
+pickup.value=f.pickup_date||'';
+dp.value=f.dp_type||'355';
+dpPaid.value=f.dp_paid_count||0;
+rate.value=f.hwb_rate||70000;
+maka.value=String(f.maka_plus_active);
+
+function save(){
+ localStorage.setItem('maka_finance_settings',JSON.stringify({
+  pickup_date:pickup.value,
+  dp_type:dp.value,
+  dp_paid_count:+dpPaid.value,
+  hwb_rate:+rate.value,
+  maka_plus_active:maka.value==='true',
+  maka_plus_rate:10000
+ }));
+ alert('TERSIMPAN');
+}
+</script>
+</body>
+</html>
