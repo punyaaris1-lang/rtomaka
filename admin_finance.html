@@ -1,89 +1,75 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Admin Finance - Sultan</title>
-<link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Finance Sultan</title>
+
+<style>
+body{margin:0;background:#05060a;color:white;font-family:system-ui}
+.container{max-width:420px;margin:auto;padding:16px}
+h1{color:#00eaff}
+label{font-size:.8rem;color:#94a6bf}
+input,select{
+ width:100%;padding:10px;margin-top:6px;margin-bottom:12px;
+ background:#0c1424;border:1px solid #222;border-radius:10px;color:white
+}
+button{
+ width:100%;padding:12px;border:none;border-radius:12px;
+ font-weight:700;background:linear-gradient(90deg,#00eaff,#7df3ff);
+ color:black
+}
+.card{
+ margin-top:14px;padding:14px;border-radius:14px;
+ background:#0b1322;border:1px solid #111;text-align:center
+}
+.qr{
+ width:160px;height:160px;background:#fff;margin:12px auto
+}
+small{color:#94a6bf}
+</style>
 </head>
+
 <body>
-<div class="app-container">
-  <header class="header">
-    <div class="user-info"><h1>Admin Finance (Sultan)</h1><p>Atur pickup, DP, tarif</p></div>
-  </header>
+<div class="container">
 
-  <section style="padding:12px 18px">
-    <div style="background:var(--card-bg);padding:12px;border-radius:12px;border:1px solid var(--glass-border)">
-      <label style="font-size:.85rem;color:var(--text-muted)">Tanggal Ambil Motor</label>
-      <input id="pickDate" type="date" style="width:100%;padding:10px;border-radius:8px;margin-top:6px;border:1px solid rgba(255,255,255,.04);background:transparent;color:var(--text-main)">
+<h1>👑 Admin Finance Sultan</h1>
 
-      <label style="font-size:.85rem;color:var(--text-muted);margin-top:12px;display:block">Opsi DP</label>
-      <select id="dpOption" style="width:100%;padding:10px;border-radius:8px;margin-top:6px;border:1px solid rgba(255,255,255,.04);background:transparent;color:var(--text-main)">
-        <option value="355">DP 355 (cicilan 70k x6)</option>
-        <option value="755">DP 755 (lunas - libur 14 & 28)</option>
-      </select>
+<label>Nama User</label>
+<select id="user">
+ <option>M Rizky Firdaus</option>
+</select>
 
-      <label style="font-size:.85rem;color:var(--text-muted);margin-top:12px;display:block">Tarif Harian (HWB)</label>
-      <input id="rateHwb" type="number" style="width:100%;padding:10px;border-radius:8px;margin-top:6px;border:1px solid rgba(255,255,255,.04);background:transparent;color:var(--text-main)">
+<label>Tanggal Tagihan</label>
+<input type="date" id="date"/>
 
-      <label style="font-size:.85rem;color:var(--text-muted);margin-top:12px;display:block">Tarif Cicilan DP (CDP)</label>
-      <input id="rateCdp" type="number" style="width:100%;padding:10px;border-radius:8px;margin-top:6px;border:1px solid rgba(255,255,255,.04);background:transparent;color:var(--text-main)">
+<label>Nominal (Rp)</label>
+<input type="number" id="amount" value="80000"/>
 
-      <div style="display:flex;gap:8px;margin-top:14px">
-        <button class="modal-btn btn-primary" onclick="saveAdmin()">Simpan</button>
-        <button class="modal-btn btn-ghost" onclick="resetPayments()">Reset Payments</button>
-      </div>
+<button onclick="createInvoice()">Buat Tagihan</button>
 
-      <div id="adminStatus" style="margin-top:12px;color:var(--text-muted)"></div>
-    </div>
-  </section>
+<div id="result"></div>
 
-  <footer class="bottom-nav">
-    <a href="index.html" class="nav-item"><span>🏠</span>Home</a>
-    <a href="calendar.html" class="nav-item"><span>📅</span>Kalender</a>
-    <a href="daftar_antrian.html" class="nav-item"><span>🎫</span>Antrian</a>
-  </footer>
 </div>
 
 <script>
-function loadAdmin(){
-  const admin = JSON.parse(localStorage.getItem('maka_finance_settings')) || { hwb_rate:80000, cdp_rate:70000 };
-  const dp = JSON.parse(localStorage.getItem('maka_dp_settings')) || { option:'355' };
-  const user = JSON.parse(localStorage.getItem('maka_user_data')) || { pick_date:'2025-09-18' };
+function createInvoice(){
+ const user=document.getElementById("user").value
+ const date=document.getElementById("date").value
+ const amount=document.getElementById("amount").value
 
-  document.getElementById('rateHwb').value = admin.hwb_rate;
-  document.getElementById('rateCdp').value = admin.cdp_rate;
-  document.getElementById('dpOption').value = dp.option || '355';
-  document.getElementById('pickDate').value = (user.pick_date || '2025-09-18');
-  document.getElementById('adminStatus').textContent = "Loaded settings dari localStorage.";
+ document.getElementById("result").innerHTML=`
+ <div class="card">
+  <strong>TAGIHAN QRIS</strong><br><br>
+  <small>${user}</small><br>
+  <small>Tanggal: ${date}</small><br>
+  <strong>Rp ${Number(amount).toLocaleString("id-ID")}</strong>
+
+  <div class="qr"></div>
+
+  <small>QRIS (Dummy)<br>Siap diganti API Midtrans/Xendit</small>
+ </div>`
 }
-
-function saveAdmin(){
-  const h = Number(document.getElementById('rateHwb').value) || 80000;
-  const c = Number(document.getElementById('rateCdp').value) || 70000;
-  const dp = document.getElementById('dpOption').value;
-  const pick = document.getElementById('pickDate').value;
-
-  localStorage.setItem('maka_finance_settings', JSON.stringify({ hwb_rate:h, cdp_rate:c }));
-  localStorage.setItem('maka_dp_settings', JSON.stringify({ option:dp }));
-  let user = JSON.parse(localStorage.getItem('maka_user_data')) || {};
-  user.pick_date = pick;
-  localStorage.setItem('maka_user_data', JSON.stringify(user));
-
-  document.getElementById('adminStatus').textContent = "Disimpan. Perubahan berlaku langsung.";
-  alert('Settings disimpan.');
-}
-
-function resetPayments(){
-  if(confirm('Reset semua data pembayaran?')) {
-    localStorage.removeItem('maka_payments');
-    localStorage.removeItem('maka_dp_payments');
-    localStorage.removeItem('maka_dp_paid');
-    alert('Data pembayaran direset.');
-  }
-}
-
-document.addEventListener('DOMContentLoaded', loadAdmin);
 </script>
 </body>
 </html>
