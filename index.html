@@ -175,5 +175,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('hero-tunggakan-days').textContent = `${r.days} Hari`;
 });
 </script>
+  <script src="maka-core.js"></script>
+<script>
+const r = MAKA.calculateOutstanding();
+document.getElementById('hero-tunggakan-nominal').textContent =
+  'Rp ' + r.total.toLocaleString('id-ID');
+document.getElementById('hero-tunggakan-days').textContent =
+  r.days + ' Hari';
+</script>
+
 </body>
 </html>
