@@ -1,180 +1,179 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MAKA Dashboard</title>
-
-<style>
-:root{
-  --bg:#06090f;
-  --card:#121a2c;
-  --neon:#00eaff;
-  --gold:#ffd369;
-  --text:#eaf1ff;
-  --muted:#8fa3c7;
-}
-
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:radial-gradient(circle at top,#0c1222,#05080d);
-  color:var(--text);
-  font-family:system-ui,-apple-system,sans-serif;
-}
-
-.app{
-  max-width:420px;
-  margin:auto;
-  padding-bottom:90px;
-}
-
-/* ===== HEADER ===== */
-.header{
-  padding:20px;
-}
-
-.header h1{
-  margin:0;
-  font-size:20px;
-}
-
-.header p{
-  margin:4px 0 0;
-  font-size:13px;
-  color:var(--muted);
-}
-
-/* ===== HERO ===== */
-.hero{
-  margin-top:16px;
-  padding:16px;
-  border-radius:16px;
-  background:linear-gradient(135deg,rgba(0,234,255,.2),rgba(18,26,44,.8));
-  box-shadow:0 0 20px rgba(0,234,255,.15);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.hero h3{
-  margin:0;
-  font-size:11px;
-  letter-spacing:1px;
-  color:var(--neon);
-}
-
-.hero span{
-  font-size:22px;
-  font-weight:700;
-  color:var(--gold);
-}
-
-/* ===== MENU GRID ===== */
-.section{
-  padding:16px;
-}
-
-.section h2{
-  font-size:14px;
-  margin-bottom:12px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-}
-
-.item{
-  background:var(--card);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:14px;
-  padding:14px 8px;
-  text-align:center;
-  font-size:12px;
-}
-
-.item span{
-  display:block;
-  font-size:26px;
-  margin-bottom:6px;
-}
-
-/* ===== BOTTOM NAV ===== */
-.nav{
-  position:fixed;
-  bottom:0;
-  left:0;right:0;
-  height:74px;
-  display:flex;
-  background:rgba(5,8,20,.95);
-  border-top:1px solid rgba(255,255,255,.08);
-}
-
-.nav a{
-  flex:1;
-  text-align:center;
-  text-decoration:none;
-  color:#7c8399;
-  font-size:11px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:6px;
-}
-
-.nav a span{
-  font-size:22px;
-}
-
-.nav a.active{
-  color:var(--neon);
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MAKA Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-<div class="app">
+  <div class="app-container">
+    <header class="header">
+      <a href="admin_finance.html" style="position:absolute;top:12px;right:16px;font-size:.8rem;color:#7c8399">ADMIN</a>
 
-  <header class="header">
-    <h1>Halo, Rizky 👋</h1>
-    <p>Plat Motor B 4248 SWF</p>
-
-    <div class="hero">
-      <div>
-        <h3>TUNGGAKAN</h3>
-        <p style="font-size:11px;color:var(--muted)">Perlu dibayar hari ini</p>
+      <div class="user-info">
+        <h1 id="user-name-display">Halo, User</h1>
+        <p>Plat Motor <strong id="user-plate-display">-</strong></p>
       </div>
-      <span>Rp 0</span>
+
+      <div class="hero-tunggakan">
+        <div>
+          <h3>STATUS PEMBAYARAN</h3>
+          <p>Tagihan berjalan sejak H+1 pengambilan</p>
+        </div>
+        <div class="hero-tunggakan-value">
+          <span id="hero-tunggakan-nominal">Rp 0</span>
+          <small id="hero-tunggakan-days">0 Hari</small>
+        </div>
+      </div>
+
+      <div class="futuristic-divider"></div>
+    </header>
+
+    <section class="icon-grid-section">
+      <h2>✨ Fitur Premium</h2>
+      <div class="icon-grid">
+        <a href="calendar.html" class="icon-item"><span>📅</span><p>Bayar & Kalender</p></a>
+        <a href="history.html" class="icon-item"><span>🗒️</span><p>Riwayat</p></a>
+        <a href="part_tracker.html" class="icon-item"><span>🎁</span><p>Gratisan</p></a>
+        <a href="info_mlu.html" class="icon-item"><span>📰</span><p>Info MLU</p></a>
+        <a href="tips_maka.html" class="icon-item"><span>💡</span><p>Tips MAKA</p></a>
+        <a href="#" class="icon-item" onclick="window.open('https://etle-pmj.info','_blank')"><span>🚨</span><p>Cek ETLE</p></a>
+        <a href="settings.html" class="icon-item"><span>⚙️</span><p>Pengaturan</p></a>
+        <a href="maka_plus.html" class="icon-item" onclick="openMakaPlus()"><span>⭐</span><p>MAKA+</p></a>
+        <a href="https://wa.me/62812XXXXXXXX?text=SOS%20MAKA%20DARURAT" target="_blank" class="icon-item sos-card"><span>🚨</span><p>SOS Darurat</p></a>
+      </div>
+    </section>
+
+    <footer class="bottom-nav">
+      <a href="lokasi_fc.html" class="nav-item"><span>⚡</span>FC</a>
+      <a href="index.html" class="nav-item active"><span>🏠</span>Home</a>
+      <a href="daftar_antrian.html" class="nav-item"><span>🎫</span>Antrian</a>
+    </footer>
+  </div>
+
+  <!-- Maka+ quick modal -->
+  <div id="makaPlusModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>MAKA+ Status</h3>
+      <p id="makaPlusInfo">Memuat...</p>
+      <div style="margin-top:12px;text-align:right">
+        <button class="modal-btn btn-ghost" onclick="closeMakaPlus()">Tutup</button>
+        <button class="modal-btn btn-primary" onclick="toggleMakaPlus()" id="makaPlusAction">...</button>
+      </div>
     </div>
-  </header>
+  </div>
 
-  <section class="section">
-    <h2>✨ Fitur Premium</h2>
+<script>
+/* CORE logic reused from calendar logic (shared rules).
+   Dashboard reads localStorage and shows outstanding amount and days (including MAKA+ charge).
+*/
 
-    <div class="grid">
-      <div class="item"><span>📅</span>Kalender</div>
-      <div class="item"><span>🗒️</span>Riwayat</div>
-      <div class="item"><span>🎁</span>Gratisan</div>
+const USER_TGL_MULAI_SEWA_DEFAULT='2025-09-20';
+const MAKA_PLUS_RATE = 10000; // per hari extra
+const ADMIN_FINANCE_DEFAULT = { hwb_rate:80000, cdp_rate:70000 };
 
-      <div class="item"><span>📰</span>Info</div>
-      <div class="item"><span>💡</span>Tips</div>
-      <div class="item"><span>🚨</span>ETLE</div>
+function getAdminFinance(){ return JSON.parse(localStorage.getItem('maka_finance_settings')) || ADMIN_FINANCE_DEFAULT }
+function getUser(){ return JSON.parse(localStorage.getItem('maka_user_data')) || { name:'M Rizky Firdaus', plate:'B 4248 SWF', pick_date: USER_TGL_MULAI_SEWA_DEFAULT } }
 
-      <div class="item"><span>⚙️</span>Setting</div>
-      <div class="item"><span>⭐</span>MAKA+</div>
-      <div class="item"><span>🚑</span>SOS</div>
-    </div>
-  </section>
+function getDPSettings(){ return JSON.parse(localStorage.getItem('maka_dp_settings')) || { option:'355' } }
 
-</div>
+function getDPStartEnd(pickDate){
+  const pick = new Date(pickDate);
+  const start = new Date(pick.getFullYear(), pick.getMonth()+1, 1);
+  const end = new Date(start.getFullYear(), start.getMonth()+3, 1);
+  return { start, end };
+}
 
-<footer class="nav">
-  <a class="active"><span>🏠</span>Home</a>
-  <a><span>⚡</span>FC</a>
-  <a><span>🎫</span>Antrian</a>
-</footer>
+function getDayStatusForDate(date, dpOption, pickDate){
+  const d=date.getDate();
+  if(d===31) return 'HLB';
+  const { start, end } = getDPStartEnd(pickDate);
+  if(dpOption==='355'){
+    if(date>=start && date<end){ if(d===14||d===28) return 'CDP'; }
+    else if(date>=end){ if(d===14||d===28) return 'HLB'; }
+  } else if(dpOption==='755'){
+    if(d===14||d===28) return 'HLB';
+  }
+  return 'HWB';
+}
+
+function calculateOutstanding(){
+  const admin = getAdminFinance();
+  const rates = { hwb: admin.hwb_rate, cdp: admin.cdp_rate };
+  const user = getUser();
+  const dp = getDPSettings();
+  const pick = new Date(user.pick_date || USER_TGL_MULAI_SEWA_DEFAULT);
+  pick.setHours(0,0,0,0);
+
+  const paid = JSON.parse(localStorage.getItem('maka_payments')) || {};
+  let cur=new Date(pick); cur.setDate(cur.getDate()+1); // start H+1
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  let total=0, days=0;
+  while(cur <= today){
+    const key = `${cur.getFullYear()}-${cur.getMonth()+1}-${cur.getDate()}`;
+    const status = getDayStatusForDate(cur, dp.option, user.pick_date);
+    const isPaid = paid[key] === true;
+    if(!isPaid){
+      if(status==='HWB'){ total += rates.hwb; days++; }
+      else if(status==='CDP'){ total += rates.cdp; days++; }
+    }
+    cur.setDate(cur.getDate()+1);
+  }
+
+  // MAKA+ extra fees
+  const makaPlus = JSON.parse(localStorage.getItem('maka_plus_status')) || { active:false };
+  if(makaPlus.active){
+    const start = new Date(makaPlus.activated_at);
+    start.setDate(start.getDate()+1); start.setHours(0,0,0,0);
+    if(today >= start){
+      const daysM = Math.floor((today - start) / (24*3600*1000)) + 1;
+      total += daysM * MAKA_PLUS_RATE;
+    }
+  }
+
+  return { total, days };
+}
+
+function openMakaPlus(){
+  const modal = document.getElementById('makaPlusModal');
+  const s = JSON.parse(localStorage.getItem('maka_plus_status')) || { active:false };
+  const info = document.getElementById('makaPlusInfo');
+  const btn = document.getElementById('makaPlusAction');
+  if(s.active){
+    info.innerHTML = `MAKA+ aktif sejak <strong>${new Date(s.activated_at).toLocaleDateString('id-ID')}</strong>. Tambahan Rp ${MAKA_PLUS_RATE}/hari.`;
+    btn.textContent = 'NONAKTIFKAN';
+  } else {
+    info.innerHTML = `MAKA+ belum aktif. Aktifkan untuk menambah Rp ${MAKA_PLUS_RATE}/hari.`;
+    btn.textContent = 'AKTIFKAN';
+  }
+  modal.classList.add('active');
+}
+
+function closeMakaPlus(){ document.getElementById('makaPlusModal').classList.remove('active') }
+
+function toggleMakaPlus(){
+  let s = JSON.parse(localStorage.getItem('maka_plus_status')) || { active:false };
+  if(s.active){ localStorage.setItem('maka_plus_status', JSON.stringify({ active:false })); }
+  else { localStorage.setItem('maka_plus_status', JSON.stringify({ active:true, activated_at:new Date().toISOString() })); }
+  closeMakaPlus();
+  // refresh dashboard values
+  const r = calculateOutstanding();
+  document.getElementById('hero-tunggakan-nominal').textContent = `Rp ${r.total.toLocaleString('id-ID')}`;
+  document.getElementById('hero-tunggakan-days').textContent = `${r.days} Hari`;
+}
+
+/* INIT */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const user = getUser();
+  localStorage.setItem('maka_user_data', JSON.stringify(user));
+  document.getElementById('user-name-display').textContent = `Halo, ${user.name}`;
+  document.getElementById('user-plate-display').textContent = user.plate;
+  const r = calculateOutstanding();
+  document.getElementById('hero-tunggakan-nominal').textContent = `Rp ${r.total.toLocaleString('id-ID')}`;
+  document.getElementById('hero-tunggakan-days').textContent = `${r.days} Hari`;
+});
+</script>
 </body>
 </html>
