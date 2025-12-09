@@ -2,209 +2,214 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Kalender Pembayaran — MAKA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kalender Pembayaran</title>
 
 <style>
 :root{
-  --bg:#05060a;--card:#0d1628;--accent:#00eaff;--muted:#94a6bf;
-  --warn:#ff5c5c;--dp:#c29cff;--gold:#ffcc55
-}
-*{box-sizing:border-box;font-family:system-ui}
-body{margin:0;background:var(--bg);color:white}
-.container{max-width:460px;margin:auto;padding:16px;padding-bottom:90px}
-
-h1{font-size:1.2rem;color:var(--accent)}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-
-.nav button{
-  background:none;border:1px solid #222;color:white;
-  padding:6px 12px;border-radius:8px;font-size:.9rem
+ --neon:#00eaff;
+ --gold:#ffe600;
+ --red:#ff4d4d;
+ --bg:#06090f;
+ --card:#0c1220;
 }
 
-.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-.day,.cell{
-  text-align:center;padding:10px 0;border-radius:8px;font-size:.8rem
-}
-.day{color:var(--muted)}
-.cell{background:#0c1424;border:1px solid #111;cursor:pointer}
+*{box-sizing:border-box}
 
-.HWB{color:var(--accent)}
-.CDP{color:var(--dp)}
-.HLB{color:var(--warn);border:1px dashed rgba(255,90,90,.3)}
-.paid{opacity:.35}
+body{
+ margin:0;
+ background:var(--bg);
+ color:#fff;
+ font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+}
 
-.legend{margin-top:12px;font-size:.75rem;color:var(--muted)}
+.app{
+ max-width:420px;
+ margin:auto;
+ min-height:100vh;
+ padding-bottom:90px;
+}
 
-.modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);
-  display:none;align-items:center;justify-content:center
+/* ===== HEADER ===== */
+.header{
+ padding:20px;
+ border-bottom:1px solid rgba(255,255,255,.08);
 }
-.modal .box{
-  background:#0b1322;padding:16px;border-radius:12px;
-  width:90%;max-width:360px
+
+.header h1{
+ margin:0;
+ font-size:20px;
+ color:var(--neon);
 }
-button.primary{
-  background:linear-gradient(90deg,#00eaff,#7df3ff);
-  color:black;border:none;padding:10px;border-radius:10px;
-  width:100%;font-weight:700;margin-top:10px
+
+/* ===== MONTH NAV ===== */
+.month-nav{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:16px 20px;
 }
-button.cancel{
-  background:none;border:1px solid #333;color:white;
-  padding:10px;border-radius:10px;margin-top:8px;width:100%
+
+.month-nav button{
+ background:none;
+ border:0;
+ color:var(--neon);
+ font-size:20px;
+}
+
+/* ===== CALENDAR ===== */
+.weekdays, .calendar{
+ display:grid;
+ grid-template-columns:repeat(7,1fr);
+ gap:6px;
+ padding:0 16px;
+}
+
+.weekdays span{
+ text-align:center;
+ font-size:12px;
+ opacity:.6;
+}
+
+.day{
+ height:44px;
+ border-radius:10px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:14px;
+ cursor:pointer;
+ border:1px solid rgba(255,255,255,.06);
+}
+
+/* STATUS BY COLOR ONLY */
+.wajib{ background:#081b24; color:var(--neon); }
+.dp{ background:#241836; color:#caa7ff; }
+.libur{ background:#2a1414; color:var(--red); }
+.paid{
+ background:var(--gold);
+ color:#000;
+ font-weight:600;
+ box-shadow:0 0 10px rgba(255,230,0,.6);
+}
+.disabled{
+ opacity:.3;
+ pointer-events:none;
+}
+.empty{background:transparent;border:none}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{
+ position:fixed;
+ bottom:0; left:0; right:0;
+ height:70px;
+ display:flex;
+ justify-content:space-around;
+ align-items:center;
+ background:linear-gradient(180deg,#05060a,#0b1020);
+ border-top:1px solid rgba(255,255,255,.08);
+}
+
+.bottom-nav a{
+ color:#9bb0cd;
+ text-decoration:none;
+ font-size:11px;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ gap:4px;
+}
+
+.bottom-nav span{font-size:20px}
+
+.active{
+ color:var(--neon);
+ text-shadow:0 0 8px rgba(0,234,255,.4);
 }
 </style>
 </head>
 
 <body>
-<div class="container">
+<div class="app">
 
-<div class="top">
-  <h1>📅 Kalender Pembayaran</h1>
-  <div class="nav">
-    <button onclick="prev()">◀</button>
-    <button onclick="next()">▶</button>
-  </div>
+<header class="header">
+ <h1>Kalender Pembayaran</h1>
+</header>
+
+<div class="month-nav">
+ <button onclick="prevMonth()">‹</button>
+ <div id="monthLabel"></div>
+ <button onclick="nextMonth()">›</button>
 </div>
 
-<div id="month" style="margin-bottom:8px;color:#ccc"></div>
-
-<div class="grid" id="calendar"></div>
-
-<div class="legend">
-HWB = Harian | CDP = Cicilan DP | HLB = Libur
+<div class="weekdays">
+ <span>Min</span><span>Sen</span><span>Sel</span>
+ <span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span>
 </div>
 
+<div id="calendar" class="calendar"></div>
+
 </div>
 
-<!-- Modal -->
-<div class="modal" id="modal">
-  <div class="box">
-    <div id="mDate"></div>
-    <div id="mStatus" style="margin-top:6px;color:#ccc"></div>
-    <div id="mNominal" style="margin-top:6px"></div>
-
-    <button id="payBtn" class="primary">Tandai Sudah Bayar</button>
-    <button class="cancel" onclick="closeModal()">Tutup</button>
-  </div>
-</div>
-
-<script>
-/* ====== SHARED DATA ====== */
-const USER = JSON.parse(localStorage.maka_user_data)
-const PAY = JSON.parse(localStorage.maka_payments||'{}')
-const DP_PAY = JSON.parse(localStorage.maka_dp_payments||'{}')
-const FIN = JSON.parse(localStorage.maka_finance_settings||'{"hwb_rate":80000,"cdp_rate":70000}')
-
-let view = new Date()
-
-/* ====== LOGIC (SAMA DENGAN DASHBOARD) ====== */
-function key(d){return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
-function pickup(){return new Date(USER.tglAmbilMotor)}
-function billingStart(){let d=pickup();d.setDate(d.getDate()+1);return d}
-
-function dpDates(){
- let p=pickup()
- let base=new Date(p.getFullYear(),p.getMonth()+1,1)
- let a=[]
- for(let i=0;i<3;i++){
-  a.push(new Date(base.getFullYear(),base.getMonth()+i,14))
-  a.push(new Date(base.getFullYear(),base.getMonth()+i,28))
- }
- return a
-}
-
-function dpDone(){return Object.keys(DP_PAY).length>=6}
-
-function status(d){
- if(d< billingStart())return 'HLB'
- if(d.getDate()==31)return 'HLB'
- if(USER.dpOption=='755'&&(d.getDate()==14||d.getDate()==28))return 'HLB'
-
- if(USER.dpOption=='355'&&!dpDone()){
-  for(let x of dpDates()){
-   if(x.toDateString()==d.toDateString())return 'CDP'
-  }
- }
-
- return 'HWB'
-}
-
-/* ====== CALENDAR ====== */
-function render(){
- const cal=document.getElementById("calendar")
- cal.innerHTML=""
- document.getElementById("month").innerText=
- view.toLocaleString("id-ID",{month:"long",year:"numeric"})
-
- ;["Min","Sen","Sel","Rab","Kam","Jum","Sab"]
- .forEach(d=>cal.innerHTML+=`<div class="day">${d}</div>`)
-
- let first=new Date(view.getFullYear(),view.getMonth(),1)
- for(let i=0;i<first.getDay();i++)cal.innerHTML+=`<div></div>`
-
- let last=new Date(view.getFullYear(),view.getMonth()+1,0).getDate()
-
- for(let i=1;i<=last;i++){
-  let d=new Date(view.getFullYear(),view.getMonth(),i)
-  let s=status(d)
-  let k=key(d)
-  let paid=PAY[k]||DP_PAY[k]
-  cal.innerHTML+=`
-  <div class="cell ${s} ${paid?'paid':''}" onclick="openModal('${k}')">
-   ${i}<br><small>${s}</small>
-  </div>`
- }
-}
-
-function prev(){view.setMonth(view.getMonth()-1);render()}
-function next(){view.setMonth(view.getMonth()+1);render()}
-
-/* ===== MODAL ===== */
-let curKey=""
-function openModal(k){
- curKey=k
- let d=new Date(k)
- let s=status(d)
- document.getElementById("modal").style.display="flex"
- document.getElementById("mDate").innerHTML=
- d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})
- document.getElementById("mStatus").innerText="Status: "+s
-
- let amt=s=="CDP"?FIN.cdp_rate:s=="HWB"?FIN.hwb_rate:0
- document.getElementById("mNominal").innerText="Tagihan: Rp "+amt.toLocaleString("id-ID")
-
- document.getElementById("payBtn").onclick=()=>markPaid(s)
- if(s=="HLB")document.getElementById("payBtn").style.display="none"
- else document.getElementById("payBtn").style.display="block"
-}
-
-function closeModal(){document.getElementById("modal").style.display="none"}
-
-function markPaid(s){
- if(s=="CDP")DP_PAY[curKey]=true
- else PAY[curKey]={paid:true}
- localStorage.maka_payments=JSON.stringify(PAY)
- localStorage.maka_dp_payments=JSON.stringify(DP_PAY)
- closeModal();render()
-}
-
-render()
-</script>
-  <footer class="bottom-nav">
-  <a href="dashboard.html" class="nav-item active">
-    <span>📅</span>
-    Kalender
-  </a>
-  <a href="admin_users.html" class="nav-item">
-    <span>👥</span>
-    User
-  </a>
-  <a href="admin_finance.html" class="nav-item">
-    <span>💳</span>
-    Finance
-  </a>
+<footer class="bottom-nav">
+ <a href="dashboard.html"><span>🏠</span>Home</a>
+ <a href="calendar.html" class="active"><span>📅</span>Kalender</a>
+ <a href="admin.html"><span>💳</span>Admin</a>
 </footer>
 
+<script>
+let current=new Date();
+
+/* SIMULASI SETTING USER */
+const ambilMotor=new Date('2025-09-18');
+const dpOpsi='355'; // 355 or 755
+const sudahBayar={};
+
+function render(){
+ const cal=document.getElementById('calendar');
+ const label=document.getElementById('monthLabel');
+ cal.innerHTML='';
+
+ label.innerText=current.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+
+ const y=current.getFullYear();
+ const m=current.getMonth();
+ const first=new Date(y,m,1).getDay();
+ const total=new Date(y,m+1,0).getDate();
+
+ for(let i=0;i<first;i++)
+  cal.innerHTML+=`<div class="day empty"></div>`;
+
+ for(let d=1; d<=total; d++){
+  const date=new Date(y,m,d);
+  let cls='day';
+  let tag=true;
+
+  if(date<=ambilMotor){cls+=' disabled'; tag=false}
+  else if(d===31) cls+=' libur';
+  else if(dpOpsi==='355'&&(d===14||d===28)
+       && date<new Date(ambilMotor.getFullYear(),ambilMotor.getMonth()+3))
+        cls+=' dp';
+  else if((d===14||d===28)) cls+=' libur';
+  else cls+=' wajib';
+
+  if(sudahBayar[`${y}-${m}-${d}`]) cls+=' paid';
+
+  cal.innerHTML+=`<div class="${cls}" onclick="${tag?'pay('+d+')':''}">${d}</div>`;
+ }
+
+}
+
+function pay(d){
+ const k=`${current.getFullYear()}-${current.getMonth()}-${d}`;
+ sudahBayar[k]=true;
+ render();
+}
+
+function prevMonth(){current.setMonth(current.getMonth()-1);render()}
+function nextMonth(){current.setMonth(current.getMonth()+1);render()}
+
+render();
+</script>
 </body>
 </html>
