@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — Master User</title>
+
+<style>
+:root{
+ --bg:#05060a;--card:#0f1628;--accent:#00eaff;
+ --muted:#9bb0cd;--ok:#3dff9b;--warn:#ff6b6b
+}
+*{box-sizing:border-box;font-family:system-ui}
+body{margin:0;background:var(--bg);color:white}
+.container{max-width:480px;margin:auto;padding:16px}
+
+h1{font-size:1.2rem;color:var(--accent)}
+
+.card{
+ background:var(--card);
+ border-radius:14px;
+ padding:14px;
+ margin-bottom:14px;
+ border:1px solid rgba(255,255,255,.05)
+}
+.row{display:flex;justify-content:space-between;font-size:.85rem;margin-top:5px}
+.label{color:var(--muted)}
+.badge{
+ font-size:.7rem;padding:3px 10px;border-radius:20px;font-weight:700
+}
+.ok{background:rgba(61,255,155,.15);color:var(--ok)}
+.warn{background:rgba(255,107,107,.15);color:var(--warn)}
+
+button{
+ width:100%;margin-top:10px;
+ background:linear-gradient(90deg,#00eaff,#87f4ff);
+ border:none;color:black;font-weight:800;
+ padding:10px;border-radius:12px
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>👥 Master User</h1>
+
+<div id="userList"></div>
+
+</div>
+
+<script>
+/*
+ STRUKTUR DATA:
+ localStorage.maka_users = [
+  {
+   id, nama, hp, motor,
+   tglAmbilMotor,
+   dpOption:"355" / "755"
+  }
+ ]
+*/
+
+const users = JSON.parse(localStorage.maka_users || '[]')
+const dpPay = JSON.parse(localStorage.maka_dp_payments || '{}')
+
+if(users.length === 0){
+ document.getElementById("userList").innerHTML =
+ '<p style="color:#777;font-size:.8rem">Belum ada user</p>'
+}else{
+ document.getElementById("userList").innerHTML =
+ users.map(u=>{
+  let dpCount = Object.keys(dpPay).filter(k=>k.startsWith(u.id)).length
+  let dpGoal = u.dpOption==="355"?6:1
+  return `
+  <div class="card">
+    <div class="row"><strong>${u.nama}</strong><strong>${u.motor}</strong></div>
+    <div class="row"><div class="label">HP</div><div>${u.hp}</div></div>
+    <div class="row"><div class="label">Ambil</div>
+      <div>${new Date(u.tglAmbilMotor).toLocaleDateString("id-ID")}</div>
+    </div>
+    <div class="row">
+      <div class="label">DP</div>
+      <div>${u.dpOption}</div>
+    </div>
+    <div class="row">
+      <div class="label">Status DP</div>
+      <span class="badge ${dpCount>=dpGoal?'ok':'warn'}">
+        ${dpCount>=dpGoal?'LUNAS':'CICILAN'}
+      </span>
+    </div>
+    <button onclick="openUser('${u.id}')">Detail User</button>
+  </div>`
+ }).join("")
+}
+
+/* NEXT */
+function openUser(id){
+ localStorage.setItem("admin_selected_user",id)
+ location.href="user.html"
+}
+</script>
+
+</body>
+</html>
