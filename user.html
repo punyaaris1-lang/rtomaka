@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>User Profile — MAKA</title>
+
+<style>
+:root{
+  --bg:#05060a;--card:#0d1628;--accent:#00eaff;
+  --muted:#94a6bf;--warn:#ff5c5c;--ok:#3dff9b
+}
+*{box-sizing:border-box;font-family:system-ui}
+body{margin:0;background:var(--bg);color:white}
+.container{max-width:460px;margin:auto;padding:16px;padding-bottom:90px}
+
+h1{font-size:1.2rem;color:var(--accent)}
+.card{
+ background:var(--card);border-radius:14px;
+ padding:14px;margin-bottom:14px;border:1px solid #111
+}
+.row{display:flex;justify-content:space-between;font-size:.85rem;margin-top:6px}
+.label{color:var(--muted)}
+.badge{
+ padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:600
+}
+.ok{background:rgba(61,255,155,.15);color:var(--ok)}
+.warn{background:rgba(255,92,92,.15);color:var(--warn)}
+
+button{
+ width:100%;background:linear-gradient(90deg,#00eaff,#7df3ff);
+ color:black;border:none;font-weight:700;
+ padding:12px;border-radius:12px
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>👤 Profil Pengguna</h1>
+
+<div class="card">
+ <div class="row"><div class="label">Nama</div><div id="nama"></div></div>
+ <div class="row"><div class="label">No HP</div><div id="hp"></div></div>
+ <div class="row"><div class="label">Motor</div><div id="motor"></div></div>
+</div>
+
+<div class="card">
+ <div class="row"><div class="label">Tanggal Ambil Motor</div><div id="ambil"></div></div>
+ <div class="row"><div class="label">DP Option</div><div id="dpOpt"></div></div>
+ <div class="row">
+  <div class="label">Status DP</div>
+  <div id="dpStatus"></div>
+ </div>
+</div>
+
+<div class="card">
+ <div class="row"><strong>Total Bayar HWB</strong><strong id="hwbTotal"></strong></div>
+ <div class="row"><strong>Total Bayar DP</strong><strong id="dpTotal"></strong></div>
+</div>
+
+<button onclick="location.href='calendar.html'">
+ Buka Kalender Pembayaran
+</button>
+
+</div>
+
+<script>
+/* ===== DATA ===== */
+const USER = JSON.parse(localStorage.maka_user_data)
+const PAY = JSON.parse(localStorage.maka_payments||'{}')
+const DP = JSON.parse(localStorage.maka_dp_payments||'{}')
+const FIN = JSON.parse(localStorage.maka_finance_settings||'{"hwb_rate":80000,"cdp_rate":70000}')
+
+/* ===== RENDER ===== */
+document.getElementById("nama").innerText = USER.nama
+document.getElementById("hp").innerText = USER.hp
+document.getElementById("motor").innerText = USER.motor
+document.getElementById("ambil").innerText =
+ new Date(USER.tglAmbilMotor).toLocaleDateString("id-ID")
+document.getElementById("dpOpt").innerText =
+ USER.dpOption=="355" ? "3.5.5" : "7.5.5"
+
+let dpCount = Object.keys(DP).length
+document.getElementById("dpStatus").innerHTML =
+ `<span class="badge ${dpCount>=6?'ok':'warn'}">
+ ${dpCount>=6?'Lunas':'Belum Lunas'}
+ </span>`
+
+document.getElementById("hwbTotal").innerText =
+ "Rp " + (Object.keys(PAY).length * FIN.hwb_rate).toLocaleString("id-ID")
+
+document.getElementById("dpTotal").innerText =
+ "Rp " + (Object.keys(DP).length * FIN.cdp_rate).toLocaleString("id-ID")
+</script>
+
+</body>
+</html>
