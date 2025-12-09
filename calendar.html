@@ -1,90 +1,88 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MAKA Calendar Premium</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalender Pembayaran MAKA</title>
 
 <style>
 :root{
-  --bg:#0b0f14;
-  --card:#121926;
-  --neon:#00eaff;
-  --gold:#ffd166;
-  --danger:#ff5c5c;
-  --muted:#555;
+ --bg:#0b1119;
+ --card:#121b29;
+ --neon:#00eaff;
+ --gold:#ffd166;
+ --danger:#ff5c5c;
+ --muted:#374151;
 }
+body{margin:0;background:var(--bg);font-family:system-ui;color:#fff}
+.app{max-width:430px;margin:auto;padding-bottom:80px}
 
-body{
-  margin:0;
-  font-family:system-ui;
-  background:var(--bg);
-  color:#fff;
-}
-.app{
-  max-width:420px;
-  margin:auto;
-}
 header{
-  padding:20px;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+ padding:18px;
+ background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 }
 h1{margin:0;font-size:20px}
+small{opacity:.75}
 
-.calendar{
-  padding:15px;
+.month-bar{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:12px 16px;
 }
-.grid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:6px;
+.month-bar button{
+ background:none;
+ border:none;
+ color:var(--neon);
+ font-size:20px;
 }
+
+.week,.grid{
+ display:grid;
+ grid-template-columns:repeat(7,1fr);
+ gap:6px;
+}
+.week{text-align:center;font-size:11px;opacity:.6;padding:0 12px}
+.calendar{padding:12px}
+
 .day{
-  height:44px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:10px;
-  font-size:14px;
+ height:44px;
+ border-radius:10px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:14px;
 }
-.pay{background:#1a2a33;color:var(--neon)}
-.off{background:#2a1a1a;color:var(--danger)}
-.paid{background:var(--gold);color:#000;font-weight:bold}
-.disabled{opacity:.3}
-
-.week{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  text-align:center;
-  font-size:11px;
-  margin-bottom:6px;
-  opacity:.7
-}
+.pay{background:#102a33;color:var(--neon)}
+.off{background:#2a1515;color:var(--danger)}
+.paid{background:var(--gold);color:#000;font-weight:700}
+.empty{background:none}
 
 .popup{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.7);
+ position:fixed;
+ inset:0;
+ display:none;
+ align-items:center;
+ justify-content:center;
+ background:rgba(0,0,0,.7);
+ z-index:99;
 }
-.popup-box{
-  background:var(--card);
-  padding:20px;
-  border-radius:16px;
-  width:85%;
+.box{
+ background:var(--card);
+ padding:20px;
+ border-radius:14px;
+ width:85%;
 }
-button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  margin-top:8px;
-  font-weight:bold;
+button.action{
+ width:100%;
+ padding:12px;
+ border:none;
+ border-radius:10px;
+ margin-top:8px;
+ font-weight:bold;
 }
-.btn-ok{background:var(--neon);color:#000}
-.btn-cancel{background:#333;color:#fff}
+.ok{background:var(--neon);color:#000}
+.cancel{background:#333;color:#fff}
 </style>
 </head>
 
@@ -92,115 +90,120 @@ button{
 <div class="app">
 
 <header>
-  <h1>📅 Kalender Pembayaran MAKA</h1>
-  <small id="info"></small>
+ <h1>📅 Kalender Pembayaran</h1>
+ <small id="info"></small>
 </header>
 
+<div class="month-bar">
+ <button onclick="prevMonth()">‹</button>
+ <strong id="monthLabel"></strong>
+ <button onclick="nextMonth()">›</button>
+</div>
+
+<div class="week">
+ <div>Min</div><div>Sen</div><div>Sel</div>
+ <div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+</div>
+
 <div class="calendar">
-  <div class="week">
-    <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
-  </div>
-  <div id="grid" class="grid"></div>
+ <div id="grid" class="grid"></div>
 </div>
 
 </div>
 
 <!-- POPUP -->
 <div id="popup" class="popup">
-  <div class="popup-box">
-    <h3 id="popup-date"></h3>
-    <p id="popup-status"></p>
-    <button class="btn-ok" onclick="confirmPay()">Tandai Sudah Bayar</button>
-    <button class="btn-cancel" onclick="closePopup()">Batal</button>
-  </div>
+ <div class="box">
+  <h3 id="pDate"></h3>
+  <p id="pStatus"></p>
+  <button class="action ok" onclick="confirmPay()">Tandai Lunas</button>
+  <button class="action cancel" onclick="closePop()">Batal</button>
+ </div>
 </div>
 
 <script>
-/* =========================
-   SETTING USER (DARI FORM)
-========================= */
-const USER = {
-  ambilMotor: '2025-09-18',
-  dpType: '355',      // '355' atau '755'
-  dpPaidCount: 3,     // 0 - 6
-  hasMakaPlus: false // false = 70rb/hari
+/* ========== USER SETTING ========== */
+const USER={
+ ambil:'2025-09-18',
+ dp:'355',          // '355' / '755'
+ dpPaid:0,          // 0 - 6
+ makaPlus:false
 };
 
-/* ========================= */
-const grid = document.getElementById('grid');
-const info = document.getElementById('info');
+const pickup=new Date(USER.ambil);
+pickup.setHours(0,0,0,0);
 
-const START = new Date(USER.ambilMotor);
-START.setDate(START.getDate()+1); // H+1
+/* ========== STATE ========== */
+let viewDate=new Date(pickup.getFullYear(),pickup.getMonth(),1);
+let selectedKey=null;
+let payments=JSON.parse(localStorage.getItem('maka_payments'))||{};
 
-let selectedDate = null;
-
-info.innerText =
-  `DP ${USER.dpType} | Cicilan DP: ${USER.dpPaidCount}/6 | Maka+: ${USER.hasMakaPlus?'Aktif':'Belum'}`;
-
+/* ========== LOGIC ========== */
 function isLibur(day){
-  if(day === 31) return true;
-
-  if(USER.dpType === '755'){
-    if(day === 14 || day === 28) return true;
-  }
-
-  if(USER.dpType === '355'){
-    if(USER.dpPaidCount >= 6){
-      if(day === 14 || day === 28) return true;
-    }
-  }
-  return false;
+ if(day===31)return true;
+ if(USER.dp==='755' && (day===14||day===28))return true;
+ if(USER.dp==='355' && USER.dpPaid>=6 && (day===14||day===28))return true;
+ return false;
 }
 
-function render(){
-  grid.innerHTML='';
-  for(let i=1;i<=30;i++){
-    const d = new Date(START);
-    d.setDate(START.getDate()+i-1);
-    const day = d.getDate();
-
-    const cell = document.createElement('div');
-    cell.className='day';
-
-    let status='';
-    if(isLibur(day)){
-      cell.classList.add('off');
-      status='⛔ Libur Pembayaran';
-    }else{
-      cell.classList.add('pay');
-      status = USER.hasMakaPlus
-        ? '✅ Gratis (MAKA+)'
-        : '💰 Bayar 70rb';
-    }
-
-    cell.innerText=day;
-    cell.onclick=()=>{
-      if(cell.classList.contains('off')) return;
-      selectedDate = cell;
-      document.getElementById('popup-date').innerText =
-        d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
-      document.getElementById('popup-status').innerText = status;
-      document.getElementById('popup').style.display='flex';
-    };
-
-    grid.appendChild(cell);
-  }
+function statusHari(date){
+ if(date<=pickup)return'DISABLED';
+ const d=date.getDate();
+ if(isLibur(d))return'LIBUR';
+ return USER.makaPlus?'MAKA+':'BAYAR';
 }
 
-function closePopup(){
-  document.getElementById('popup').style.display='none';
+/* ========== RENDER ========== */
+function renderCalendar(){
+ grid.innerHTML='';
+ monthLabel.innerText=viewDate.toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+ info.innerText=`DP ${USER.dp} | Cicilan ${USER.dpPaid}/6 | MAKA+ ${USER.makaPlus?'ON':'OFF'}`;
+
+ const first=new Date(viewDate.getFullYear(),viewDate.getMonth(),1);
+ const last=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,0);
+ const start=first.getDay();
+
+ for(let i=0;i<start;i++){
+  grid.innerHTML+='<div class="day empty"></div>';
+ }
+
+ for(let d=1;d<=last.getDate();d++){
+  const date=new Date(viewDate.getFullYear(),viewDate.getMonth(),d);
+  const key=date.toISOString().slice(0,10);
+  const st=statusHari(date);
+
+  const el=document.createElement('div');
+  el.className='day';
+  el.innerText=d;
+
+  if(payments[key])el.classList.add('paid');
+  else if(st==='LIBUR')el.classList.add('off');
+  else if(st==='BAYAR'||st==='MAKA+')el.classList.add('pay');
+  else{el.classList.add('off');}
+
+  el.onclick=()=>{
+   if(st!=='BAYAR'&&st!=='MAKA+')return;
+   selectedKey=key;
+   pDate.innerText=date.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+   pStatus.innerText=st==='MAKA+'?'Gratis MAKA+':'Bayar 70rb';
+   popup.style.display='flex';
+  };
+
+  grid.appendChild(el);
+ }
 }
 
 function confirmPay(){
-  if(selectedDate){
-    selectedDate.classList.remove('pay');
-    selectedDate.classList.add('paid');
-  }
-  closePopup();
+ payments[selectedKey]=true;
+ localStorage.setItem('maka_payments',JSON.stringify(payments));
+ popup.style.display='none';
+ renderCalendar();
 }
+function closePop(){popup.style.display='none'}
+function prevMonth(){viewDate.setMonth(viewDate.getMonth()-1);renderCalendar()}
+function nextMonth(){viewDate.setMonth(viewDate.getMonth()+1);renderCalendar()}
 
-render();
+renderCalendar();
 </script>
 </body>
 </html>
