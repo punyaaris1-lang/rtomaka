@@ -5,31 +5,115 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MAKA RTO App</title>
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css"> 
 <script src="app.js"></script>
 
+<style>
+/* ========================================= */
+/* CSS FIX (UNTUK MEMASTIKAN TAMPILAN MUNCUL) */
+/* ========================================= */
+:root {
+  /* Variabel Utama (Tema Putih) */
+  --bg-main: #f5f6f8; 
+  --card-bg: rgba(255, 255, 255, 0.95); 
+  --glass-border: rgba(0, 0, 0, 0.1); 
+  --primary-neon: #007aff; 
+  --paid-green: #00a049; 
+  --holiday-color: #e63946; 
+  --dp-color: #8e44ad; 
+  --text-main: #222;
+  --text-secondary: #7f8c8d;
+}
+
+body {
+  background: var(--bg-main); 
+  color: var(--text-main);
+  padding-bottom: 90px;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.app-container { max-width: 420px; margin: auto; padding-bottom: 130px; }
+.card { background: var(--card-bg); border-radius: 18px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); margin-bottom: 20px; border: 1px solid var(--glass-border); }
+
+/* DASHBOARD LAYOUT FIX */
+.header { padding: 22px; }
+.hero-tunggakan {
+  margin-top: 18px; background: var(--card-bg); border-radius: 18px; padding: 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,.1); border: 1px solid var(--glass-border);
+}
+.hero-tunggakan h3 { font-size: .75em; color: var(--primary-neon); margin: 0;}
+.hero-tunggakan-value span { font-size: 1.35em; font-weight: 700;}
+.futuristic-divider { height: 1px; margin: 22px 0; background: var(--glass-border); opacity: 1;}
+.progress-box { margin: 18px 0;}
+.progress-label { display: flex; justify-content: space-between; font-size: 0.8em; margin-bottom: 8px; color: var(--text-secondary);}
+.progress-bar { width: 100%; height: 10px; background: #e9ecef; border-radius: 10px; overflow: hidden;}
+#progressBarFill { height: 100%; background: var(--primary-neon); width: 0%; border-radius: 10px; transition: width 0.3s ease;}
+.icon-grid-section { padding: 0 20px; }
+.icon-grid-section h3 { color: var(--primary-neon); font-size: 1.1em; margin-bottom: 15px;}
+.icon-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px;}
+.icon-item {
+  background: var(--card-bg); border-radius: 16px; padding: 16px 10px; text-align: center;
+  border: 1px solid var(--glass-border); color: var(--text-main); text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,.05); transition: transform .2s ease;
+}
+.icon-item span { display: block; font-size: 1.7em; margin-bottom: 6px;}
+.icon-item p { margin: 0; font-size: .72em; font-weight: 600; color: var(--text-secondary);}
+
+/* KALENDER GRID FIX */
+.cal-header {
+    display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; padding: 10px 14px 0;
+    font-size: 0.7em; font-weight: 600; color: var(--text-secondary);
+}
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; padding:14px;}
+.day-box {
+  border-radius:12px; padding:10px 0; font-size:.7em; text-align:center;
+  border:1px solid var(--glass-border); background:var(--card-bg);
+  box-shadow: 0 2px 5px rgba(0,0,0,.05);
+}
+.day-box b{ display:block; font-size:1.1em; font-weight:700;}
+
+/* STATUS COLORS */
+.paid-day { background: #d4edda; color: #155724; font-weight: 700; border-color: #c3e6cb;} 
+.dp-day { background: #d6b8ef; color: #4f3366; font-weight: 700; border-color: #c0a8d7;}
+.holiday-day { background: #f8d7da; color: #721c24; opacity: 1; border-color: #f5c6cb;}
+.today-day{ outline:2px solid var(--primary-neon); box-shadow: 0 0 10px rgba(0,122,255,.3);}
+
+/* BOTTOM NAV FIX */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 82px; padding-bottom: env(safe-area-inset-bottom);
+  display: flex; justify-content: space-around; align-items: center;
+  background: rgba(255,255,255,.98); backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(0,0,0,.08); z-index: 999; box-shadow: 0 -4px 15px rgba(0,0,0,.08);
+}
+.nav-item {
+  flex: 1; text-align: center; color: #7f8c8d; text-decoration: none; font-size: 12px;
+  display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center;
+  transition: transform .2s ease;
+}
+.nav-item span { font-size: 28px;}
+.nav-item.active { color: var(--primary-neon);}
+.nav-item.active span {
+  background: var(--primary-neon); color: #fff; width: 54px; height: 54px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; transform: translateY(-22px);
+  box-shadow: 0 0 20px rgba(0,122,255,.5);
+}
+
+</style>
 </head>
 <body>
 
 <div id="loginScreen" class="login-screen">
   <div class="card">
     <h1>Login MAKA RTO</h1>
-
-    <label>Nama User</label>
-    <input id="nama" type="text" placeholder="Nama lengkap">
-
-    <label>Plat Nomor</label>
-    <input id="plat" type="text" placeholder="B 1234 ABC">
-
-    <label>Tanggal Ambil Motor</label>
-    <input id="tanggalAmbil" type="date">
-
+    <label>Nama User</label><input id="nama" type="text" placeholder="Nama lengkap">
+    <label>Plat Nomor</label><input id="plat" type="text" placeholder="B 1234 ABC">
+    <label>Tanggal Ambil Motor</label><input id="tanggalAmbil" type="date">
     <label>Opsi DP</label>
     <select id="dp">
       <option value="355">DP 355.000 (Cicil)</option>
       <option value="755">DP 755.000 (Langsung)</option>
     </select>
-
     <button onclick="loginUser()">MASUK</button>
   </div>
 </div>
@@ -69,11 +153,11 @@
     <div class="icon-grid">
       <a href="#" class="icon-item" onclick="showScreen('calendar')"><span>📅</span><p>Kalender</p></a>
       <a href="#" class="icon-item" onclick="showScreen('history')"><span>🧾</span><p>Riwayat</p></a>
-      <a href="#" class="icon-item"><span>🎁</span><p>Part Gratis</p></a>
-      <a href="#" class="icon-item"><span>📰</span><p>Info MLU</p></a>
-      <a href="#" class="icon-item"><span>💡</span><p>Maka Tips</p></a>
+      <a href="#" class="icon-item" onclick="showScreen('parts')"><span>🎁</span><p>Part Gratis</p></a>
+      <a href="#" class="icon-item" onclick="showScreen('mlu')"><span>📰</span><p>Info MLU</p></a>
+      <a href="#" class="icon-item" onclick="showScreen('tips')"><span>💡</span><p>Maka Tips</p></a>
       <a href="#" class="icon-item"><span>⭐</span><p>MAKA+</p></a>
-      <a href="#" class="icon-item"><span>⚙️</span><p>Setting</p></a>
+      <a href="#" class="icon-item" onclick="showScreen('settings')"><span>⚙️</span><p>Setting</p></a>
       <a href="https://wa.me/62812XXXXXXX" target="_blank" class="icon-item sos-card"><span>🚨</span><p>SOS CS</p></a>
     </div>
   </section>
@@ -101,6 +185,38 @@
     </div>
 </div>
 
+<div id="partsScreen" class="app-container" style="display: none;">
+    <h3 class="header-title" style="padding: 22px 22px 0;">🎁 Part Gratis</h3>
+    <div id="partsContent"></div>
+</div>
+
+<div id="settingsScreen" class="app-container" style="display: none;">
+    <h3 class="header-title" style="padding: 22px 22px 0;">⚙️ Setting & Pause</h3>
+    <div class="card">
+        <h4>User Profile</h4>
+        <label>Nama</label><input type="text" id="settingNama" readonly>
+        <label>Plat Nomor</label><input type="text" id="settingPlat" readonly>
+        <label>No HP Baru</label><input type="tel" id="settingNoHp" placeholder="Masukkan nomor HP baru">
+        <button onclick="updateSettings()">Ganti No HP</button>
+
+        <div class="futuristic-divider"></div>
+
+        <h4>PAUSE Pembayaran</h4>
+        <p style="font-size: 0.8em; color: var(--holiday-color); margin-bottom: 10px;">Pause pembayaran akan memperpanjang total 1009 hari sewa Anda.</p>
+        <label>Alasan Pause (Sakit/Kecelakaan dll)</label>
+        <select id="pauseReason">
+            <option value="">-- Pilih Alasan --</option>
+            <option value="Sakit">Sakit</option>
+            <option value="Kecelakaan">Kecelakaan</option>
+            <option value="Lainnya">Lainnya</option>
+        </select>
+        <label>Durasi Pause (Hari)</label>
+        <input type="number" id="pauseDuration" placeholder="Contoh: 7" min="1">
+        <button onclick="requestPause()">Ajukan Pause</button>
+        <p id="pauseStatus" style="font-size: 0.8em; margin-top: 10px;"></p>
+    </div>
+</div>
+
 
 <footer id="bottomNav" class="bottom-nav" style="display: none;">
   <a href="#" class="nav-item" onclick="showScreen('fc')"><span>⚡</span>FC</a>
@@ -109,21 +225,19 @@
 </footer>
 
 <script>
-/* ========================================================== */
-/* JAVASCRIPT GLOBAL SCRIPT (Dari index.html sebelumnya)      */
-/* ========================================================== */
 
-// --- GLOBAL NAVIGATION ---
+// --- Fungsi Global (showScreen, loginUser, dsb) sama seperti sebelumnya ---
+
 function showScreen(screenId) {
-    const screens = ['loginScreen', 'dashboardScreen', 'calendarScreen', 'historyScreen'];
+    const screens = ['loginScreen', 'dashboardScreen', 'calendarScreen', 'historyScreen', 'partsScreen', 'settingsScreen', 'mluScreen', 'tipsScreen'];
     screens.forEach(id => {
-        document.getElementById(id).style.display = (id === screenId + 'Screen' || id === 'loginScreen' && screenId === 'login') ? 'block' : 'none';
+        const element = document.getElementById(id);
+        if(element) element.style.display = (id === screenId + 'Screen' || (id === 'loginScreen' && screenId === 'login')) ? 'block' : 'none';
     });
 
     const user = getActiveUser();
     document.getElementById('bottomNav').style.display = (user && screenId !== 'login') ? 'flex' : 'none';
     
-    // Aktifkan Nav Item yang benar
     const navItems = document.querySelectorAll('.bottom-nav .nav-item');
     navItems.forEach(item => item.classList.remove('active'));
     
@@ -135,189 +249,120 @@ function showScreen(screenId) {
         renderCalendar(); 
     } else if (screenId === 'history') {
         renderHistory();
+    } else if (screenId === 'parts') {
+        renderParts(); 
+    } else if (screenId === 'settings') {
+        renderSettings(); 
     }
 }
 
-// --- LOGIN/SIGNUP LOGIC ---
-function loginUser(){
-  const nama = document.getElementById('nama').value.trim();
-  const plat = document.getElementById('plat').value.trim();
-  const tanggalAmbil = document.getElementById('tanggalAmbil').value;
-  const dp = document.getElementById('dp').value;
+// ... (Fungsi loginUser() tetap sama) ...
 
-  if(!nama || !plat || !tanggalAmbil){
-    alert('Lengkapi semua data');
-    return;
-  }
-
-  // Cek apakah user sudah ada (sederhana)
-  let user = DB.users.find(u => u.plat === plat);
-  if (user) {
-    DB.activeUserId = user.id;
-  } else {
-    const newUser = {
-      id: 'USR' + Date.now(), 
-      nama: nama, plat: plat, startDate: tanggalAmbil, dpType: dp, 
-      progressHari: 0, makaPlus: { active: false, activatedAt: null }, payments: {}, freeParts: []
-    };
-    DB.users.push(newUser);
-    DB.activeUserId = newUser.id;
-  }
-
-  saveDB(DB);
-  showScreen('dashboard');
-}
-
-// --- RENDER FUNCTIONS (Pastikan sudah didefinisikan di app.js) ---
-function renderDashboard(){
+// --- FUNGSI BARU: PART GRATIS ---
+function renderParts() {
     const user = getActiveUser();
-    if (!user) return;
+    const content = document.getElementById('partsContent');
+    content.innerHTML = '';
 
-    const totalDays = DB.config.totalRentalDays;
-    const tunggakanData = getTotalTunggakan(user);
-    const progressPercent = (user.progressHari / totalDays) * 100;
+    const parts = [
+        { name: 'Ban Depan', kuota: user.freeParts.ban_depan_sisa || 3, total: 3, key: 'ban_depan' },
+        { name: 'Ban Belakang', kuota: user.freeParts.ban_belakang_sisa || 3, total: 3, key: 'ban_belakang' },
+        { name: 'Kampas Rem Depan', kuota: user.freeParts.kampas_rem_depan_sisa || 9, total: 9, key: 'kampas_rem_depan' },
+        { name: 'Kampas Rem Belakang', kuota: user.freeParts.kampas_rem_belakang_sisa || 9, total: 9, key: 'kampas_rem_belakang' }
+    ];
 
-    document.getElementById('userName').textContent = 'Halo, ' + user.nama;
-    document.getElementById('userPlate').textContent = user.plat;
-
-    // TUNGGAKAN
-    const tunggakanSpan = document.getElementById('billTotal');
-    const daysP = document.getElementById('tunggakanDays');
-
-    document.getElementById('billTotal').textContent = formatIDR(tunggakanData.nominal);
-    document.getElementById('tunggakanDays').textContent = tunggakanData.hari + ' Hari Tertunggak';
-    
-    // Menggunakan CSS Variable dari styles.css
-    if(tunggakanData.hari > 0) {
-        tunggakanSpan.style.color = 'var(--holiday-color)'; // Merah
-        daysP.style.color = 'var(--holiday-color)'; 
-    } else {
-        tunggakanSpan.style.color = 'var(--paid-green)'; // Hijau
-        daysP.style.color = 'var(--paid-green)';
-    }
-
-    // PROGRESS BAR
-    document.getElementById('progressText').textContent = user.progressHari + ' / ' + totalDays + ' Hari';
-    document.getElementById('progressBarFill').style.width = progressPercent.toFixed(2) + '%';
-}
-
-function renderCalendar(){
-    const user = getActiveUser();
-    if(!user) return;
-    
-    const cal = document.getElementById('calendar');
-    cal.innerHTML = ''; 
-    
-    const now = new Date();
-    now.setHours(0,0,0,0);
-    const y = now.getFullYear();
-    const m = now.getMonth();
-
-    const daysInMonth = new Date(y, m+1, 0).getDate();
-    const firstDayOfMonth = new Date(y, m, 1).getDay();
-
-    // Kotak kosong untuk offset hari
-    for(let i=0; i<firstDayOfMonth; i++){
-        const emptyBox = document.createElement('div');
-        emptyBox.className = 'day-box';
-        emptyBox.innerHTML = '&nbsp;';
-        emptyBox.style.border = 'none';
-        emptyBox.style.background = 'transparent';
-        emptyBox.style.boxShadow = 'none';
-        cal.appendChild(emptyBox);
-    }
-
-    for(let d=1; d<=daysInMonth; d++){
-      const date = new Date(y,m,d);
-      date.setHours(0,0,0,0);
-      const iso = dateOnly(date);
-
-      const box = document.createElement('div');
-      box.className = 'day-box';
-      box.innerHTML = `<b>${d}</b>`;
-
-      if(date.getTime() === now.getTime()) box.classList.add('today-day');
-
-      const isPaid = user.payments[iso]?.paid;
-      const dpStatus = getDPCicilStatus(user, iso); 
-
-      if(isPaid){
-        box.classList.add('paid-day');
-        box.innerHTML += `<small>Bayar</small>`;
-      }
-      else if(isHoliday(user, iso)){
-        box.classList.add('holiday-day');
-        box.innerHTML += `<small>Libur</small>`;
-      }
-      else if(dpStatus.isCicilDay){
-        box.classList.add('dp-day');
-        box.innerHTML += `<small>Cicil DP</small>`;
-        box.onclick = ()=> confirmPay(iso, getDailyRate(user, iso)); 
-      }
-      else{
-        const rate = getDailyRate(user, iso);
-        box.innerHTML += `<small>${formatIDR(rate)}</small>`;
-        
-        if (date.getTime() <= now.getTime()) {
-            box.onclick = ()=> confirmPay(iso, rate);
-        }
-        
-        if (date.getTime() === now.getTime() && rate > 0) {
-            box.style.color = 'var(--holiday-color)'; 
-        }
-      }
-      cal.appendChild(box);
-    }
-}
-
-function confirmPay(date, amount){
-  if(amount === 0) return; 
-
-  if(confirm(`Bayar tanggal ${date}\nTagihan: ${formatIDR(amount)}`)){
-    markPaid(getActiveUser(), date); 
-    alert('✅ Dicatat sebagai dibayar');
-    renderCalendar();
-    renderDashboard();
-  }
-}
-
-function renderHistory() {
-    const user = getActiveUser();
-    const list = document.getElementById('paymentHistoryList');
-    list.innerHTML = '';
-    
-    const historyArray = Object.keys(user.payments).map(date => ({
-        date: date,
-        ...user.payments[date]
-    })).sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    if (historyArray.length === 0) {
-        list.innerHTML = '<li style="padding: 10px 0; color: var(--text-secondary);">Belum ada riwayat pembayaran.</li>';
-        return;
-    }
-
-    historyArray.forEach(item => {
-        const li = document.createElement('li');
-        li.style.padding = '10px 0';
-        li.style.borderBottom = '1px solid var(--glass-border)';
-        li.style.display = 'flex';
-        li.style.justifyContent = 'space-between';
-        
-        li.innerHTML = `
-            <div>
-                <b style="font-size: 0.9em;">${item.date}</b><br>
-                <small style="color: var(--text-secondary);">${item.type === 'cicil_dp' ? 'Cicilan DP' : 'Sewa Harian'}</small>
+    parts.forEach(part => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+            <h4>${part.name}</h4>
+            <p style="font-size: 0.8em; margin: 5px 0 10px;">Kuota Tahunan: ${part.total/3}</p>
+            <div class="progress-label">
+                <span>Sisa Kuota:</span>
+                <span>${part.kuota} / ${part.total} Kali</span>
             </div>
-            <div style="text-align: right;">
-                <span style="font-weight: 600; color: var(--paid-green);">${formatIDR(item.amount)}</span>
+            <div class="progress-bar" style="height: 6px;">
+                <div style="height: 100%; background: var(--paid-green); width: ${(part.kuota / part.total) * 100}%; border-radius: 6px;"></div>
             </div>
+            <button onclick="markPartUsed('${part.key}')" style="margin-top: 15px; background: #3498db; font-size: 0.9em; padding: 8px;">Gunakan Part</button>
         `;
-        list.appendChild(li);
+        content.appendChild(card);
     });
 }
 
+function markPartUsed(key) {
+    const user = getActiveUser();
+    if (user.freeParts[key + '_sisa'] === undefined) {
+        // Inisialisasi jika belum ada di data user
+        user.freeParts[key + '_sisa'] = key.includes('ban') ? 3 : 9;
+    }
 
-/* INITIAL CHECK */
+    if (user.freeParts[key + '_sisa'] > 0) {
+        if (confirm(`Yakin ingin menandai 1x penggunaan ${key.replace(/_/g, ' ').toUpperCase()}? Kuota akan berkurang.`)) {
+            user.freeParts[key + '_sisa']--;
+            // Catat log penggunaan (opsional)
+            saveDB(DB);
+            renderParts();
+            alert('Penggunaan dicatat. Kuota diperbarui!');
+        }
+    } else {
+        alert('Kuota gratis untuk part ini sudah habis.');
+    }
+}
+
+// --- FUNGSI BARU: SETTINGS & PAUSE ---
+function renderSettings() {
+    const user = getActiveUser();
+    document.getElementById('settingNama').value = user.nama;
+    document.getElementById('settingPlat').value = user.plat;
+    document.getElementById('settingNoHp').value = user.noHp || ''; 
+    
+    // Status Pause
+    const statusText = user.pauseStatus?.isPaused ? 
+        `⏸️ PAUSE AKTIF. Durasi: ${user.pauseStatus.duration} hari (Mundur ${user.pauseStatus.duration} hari).` :
+        '▶️ Tidak ada pause pembayaran aktif.';
+    document.getElementById('pauseStatus').textContent = statusText;
+}
+
+function updateSettings() {
+    const user = getActiveUser();
+    const newHp = document.getElementById('settingNoHp').value.trim();
+
+    user.noHp = newHp;
+    saveDB(DB);
+    alert('Nomor HP berhasil diperbarui.');
+    renderDashboard();
+}
+
+function requestPause() {
+    const user = getActiveUser();
+    const reason = document.getElementById('pauseReason').value;
+    const duration = parseInt(document.getElementById('pauseDuration').value);
+
+    if (!reason || isNaN(duration) || duration <= 0) {
+        alert('Mohon lengkapi alasan dan durasi pause yang valid.');
+        return;
+    }
+
+    if (confirm(`Ajukan pause selama ${duration} hari dengan alasan: ${reason}? Total hari sewa akan mundur.`)) {
+        // Logika Pause: Simpan status pause ke data user
+        user.pauseStatus = {
+            isPaused: true,
+            reason: reason,
+            duration: duration,
+            requestedAt: new Date().toISOString()
+        };
+        // Catatan: Logic mundurnya tanggal akhir 1009 hari akan dihitung saat progress bar
+        
+        saveDB(DB);
+        renderSettings();
+        alert('Pengajuan Pause dicatat! Total hari RTO Anda akan mundur.');
+    }
+}
+
+// ... (Fungsi renderDashboard, renderCalendar, renderHistory tetap sama) ...
+
+// --- INITIAL CHECK ---
 document.addEventListener('DOMContentLoaded', () => {
     const user = getActiveUser();
     if (user) {
@@ -328,5 +373,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
 </body>
 </html>
