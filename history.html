@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Riwayat Pembayaran</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+<div class="app-container">
+  <header class="header">
+    <div class="user-info">
+      <h1>🧾 Riwayat Pembayaran</h1>
+      <p>Semua transaksi harian</p>
+    </div>
+  </header>
+
+  <section style="padding:12px 18px">
+    <div id="historyList"></div>
+  </section>
+
+  <footer class="bottom-nav">
+    <a href="index.html"><span>🏠</span>Home</a>
+    <a href="calendar.html"><span>📅</span>Kalender</a>
+    <a class="active" href="history.html"><span>🧾</span>History</a>
+  </footer>
+</div>
+
+<script>
+const payments = JSON.parse(localStorage.getItem('maka_payments')) || {};
+const admin = JSON.parse(localStorage.getItem('maka_finance_settings')) || { hwb_rate:80000, cdp_rate:70000 };
+const dp = JSON.parse(localStorage.getItem('maka_dp_settings')) || { option:'355' };
+const user = JSON.parse(localStorage.getItem('maka_user_data')) || {};
+const list = document.getElementById('historyList');
+
+function getDayType(date){
+  const d = date.getDate();
+  if(d === 31) return 'HLB';
+  if(dp.option === '755' && (d===14||d===28)) return 'HLB';
+  if(dp.option === '355' && (d===14||d===28)){
+    const pick = new Date(user.pick_date);
+    const start = new Date(pick.getFullYear(), pick.getMonth()+1, 1);
+    const end = new Date(start.getFullYear(), start.getMonth()+3, 1);
+    if(date >= start && date < end) return 'CDP';
+    if(date >= end) return 'HLB';
+  }
+  return 'HWB';
+}
+
+const entries = Object.keys(payments)
+  .filter(k => payments[k])
+  .sort((a,b)=> new Date(b)-new Date(a));
+
+if(entries.length === 0){
+  list.innerHTML = '<p style="color:var(--text-muted)">Belum ada pembayaran.</p>';
+}
+
+entries.forEach(key=>{
+  const [y,m,d] = key.split('-');
+  const date = new Date(y, m-1, d);
+  const tipe = getDayType(date);
+  const nominal = tipe === 'CDP' ? admin.cdp_rate : admin.hwb_rate;
+
+  list.innerHTML += `
+    <div style="
+      background:var(--card-bg);
+      border:1px solid var(--glass-border);
+      border-radius:12px;
+      padding:12px;
+      margin-bottom:10px;
+      box-shadow:0 8px 20px rgba(0,0,0,.4)
+    ">
+      <strong>${date.toLocaleDateString('id-ID')}</strong><br>
+      <small style="color:var(--text-muted)">
+        ${tipe === 'CDP' ? 'Cicilan DP' : 'Harian'} — 
+        Rp ${nominal.toLocaleString('id-ID')}
+      </small>
+    </div>
+  `;
+});
+</script>
+</body>
+</html>
