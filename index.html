@@ -110,7 +110,7 @@
 
 <script>
 /* ========================================================== */
-/* JAVASCRIPT GLOBAL SCRIPT (Mengontrol Tampilan dan Alur)    */
+/* JAVASCRIPT GLOBAL SCRIPT (Dari index.html sebelumnya)      */
 /* ========================================================== */
 
 // --- GLOBAL NAVIGATION ---
@@ -153,10 +153,8 @@ function loginUser(){
   // Cek apakah user sudah ada (sederhana)
   let user = DB.users.find(u => u.plat === plat);
   if (user) {
-    // Jika ada, log in
     DB.activeUserId = user.id;
   } else {
-    // Jika tidak ada, buat baru
     const newUser = {
       id: 'USR' + Date.now(), 
       nama: nama, plat: plat, startDate: tanggalAmbil, dpType: dp, 
@@ -170,7 +168,7 @@ function loginUser(){
   showScreen('dashboard');
 }
 
-// --- RENDER DASHBOARD ---
+// --- RENDER FUNCTIONS (Pastikan sudah didefinisikan di app.js) ---
 function renderDashboard(){
     const user = getActiveUser();
     if (!user) return;
@@ -183,17 +181,18 @@ function renderDashboard(){
     document.getElementById('userPlate').textContent = user.plat;
 
     // TUNGGAKAN
+    const tunggakanSpan = document.getElementById('billTotal');
+    const daysP = document.getElementById('tunggakanDays');
+
     document.getElementById('billTotal').textContent = formatIDR(tunggakanData.nominal);
     document.getElementById('tunggakanDays').textContent = tunggakanData.hari + ' Hari Tertunggak';
     
-    const tunggakanSpan = document.getElementById('billTotal');
-    const daysP = document.getElementById('tunggakanDays');
-    
+    // Menggunakan CSS Variable dari styles.css
     if(tunggakanData.hari > 0) {
-        tunggakanSpan.style.color = 'var(--holiday-color)'; 
+        tunggakanSpan.style.color = 'var(--holiday-color)'; // Merah
         daysP.style.color = 'var(--holiday-color)'; 
     } else {
-        tunggakanSpan.style.color = 'var(--paid-green)';
+        tunggakanSpan.style.color = 'var(--paid-green)'; // Hijau
         daysP.style.color = 'var(--paid-green)';
     }
 
@@ -202,7 +201,6 @@ function renderDashboard(){
     document.getElementById('progressBarFill').style.width = progressPercent.toFixed(2) + '%';
 }
 
-// --- RENDER KALENDER ---
 function renderCalendar(){
     const user = getActiveUser();
     if(!user) return;
@@ -218,6 +216,7 @@ function renderCalendar(){
     const daysInMonth = new Date(y, m+1, 0).getDate();
     const firstDayOfMonth = new Date(y, m, 1).getDay();
 
+    // Kotak kosong untuk offset hari
     for(let i=0; i<firstDayOfMonth; i++){
         const emptyBox = document.createElement('div');
         emptyBox.className = 'day-box';
@@ -282,7 +281,6 @@ function confirmPay(date, amount){
   }
 }
 
-// --- RENDER HISTORY ---
 function renderHistory() {
     const user = getActiveUser();
     const list = document.getElementById('paymentHistoryList');
@@ -318,6 +316,7 @@ function renderHistory() {
     });
 }
 
+
 /* INITIAL CHECK */
 document.addEventListener('DOMContentLoaded', () => {
     const user = getActiveUser();
@@ -329,6 +328,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
-
 </body>
 </html>
