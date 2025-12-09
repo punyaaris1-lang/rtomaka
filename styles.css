@@ -1,0 +1,61 @@
+/* ===============================
+   MAKA PREMIUM UI – LIGHT MODE (PUTIH)
+   File: styles.css
+================================ */
+
+:root {
+  --bg-main: #f5f6f8; 
+  --card-bg: rgba(255, 255, 255, 0.95); 
+  --glass-border: rgba(0, 0, 0, 0.1); 
+
+  --primary-neon: #007aff; /* Biru terang untuk aksen */
+  --paid-green: #00a049; /* Hijau untuk Lunas */
+  --holiday-color: #e63946; /* Merah untuk Libur/Tunggakan */
+  --dp-color: #8e44ad; /* Ungu untuk DP Cicil */
+
+  --text-main: #222;
+  --text-secondary: #7f8c8d;
+}
+
+/* RESET */
+* {
+  box-sizing: border-box;
+  font-family: "Inter", system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-main); 
+  color: var(--text-main);
+  padding-bottom: 90px;
+}
+
+.app-container {
+  max-width: 420px;
+  margin: auto;
+  padding-bottom: 130px; 
+}
+
+/* Card General */
+.card {
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  border: 1px solid var(--glass-border);
+}
+
+/* LOGIN FORM */
+.login-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: var(--bg-main);
+}
+.login-screen .card { width: 100%; max-width: 350px; }
+.login-screen h1 { font-size: 1.5em; margin-bottom: 20px; color: var(--primary-neon); }
+label { display: block; margin-top: 10px; margin-bottom: 5px; font-size: 0.
