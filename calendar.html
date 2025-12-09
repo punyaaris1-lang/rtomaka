@@ -1,151 +1,206 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalender MAKA</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MAKA Calendar Premium</title>
 
 <style>
+:root{
+  --bg:#0b0f14;
+  --card:#121926;
+  --neon:#00eaff;
+  --gold:#ffd166;
+  --danger:#ff5c5c;
+  --muted:#555;
+}
+
 body{
   margin:0;
-  background:#05080d;
-  color:#eaf1ff;
   font-family:system-ui;
+  background:var(--bg);
+  color:#fff;
 }
-
-.header{
-  padding:16px;
-  border-bottom:1px solid rgba(255,255,255,.1);
+.app{
+  max-width:420px;
+  margin:auto;
 }
-
-.header h1{
-  margin:0;
-  font-size:18px;
+header{
+  padding:20px;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 }
+h1{margin:0;font-size:20px}
 
 .calendar{
+  padding:15px;
+}
+.grid{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  gap:8px;
-  padding:16px;
+  gap:6px;
 }
-
 .day{
-  height:48px;
-  border-radius:10px;
+  height:44px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:13px;
-  background:#121a2c;
+  border-radius:10px;
+  font-size:14px;
 }
+.pay{background:#1a2a33;color:var(--neon)}
+.off{background:#2a1a1a;color:var(--danger)}
+.paid{background:var(--gold);color:#000;font-weight:bold}
+.disabled{opacity:.3}
 
-.day.pay{
-  background:#1b2f24;
-  color:#6fffb1;
-}
-
-.day.off{
-  background:#2b1c1c;
-  color:#ff8f8f;
+.week{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  text-align:center;
+  font-size:11px;
+  margin-bottom:6px;
+  opacity:.7
 }
 
 .popup{
   position:fixed;
-  bottom:0;
-  left:0;right:0;
-  background:#0b1220;
-  border-top-left-radius:18px;
-  border-top-right-radius:18px;
-  padding:20px;
+  inset:0;
   display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.7);
 }
-
-.popup h3{
-  margin:0 0 8px;
+.popup-box{
+  background:var(--card);
+  padding:20px;
+  border-radius:16px;
+  width:85%;
 }
-
-.popup button{
+button{
   width:100%;
-  margin-top:12px;
   padding:12px;
   border:none;
   border-radius:12px;
-  background:#00eaff;
+  margin-top:8px;
   font-weight:bold;
 }
+.btn-ok{background:var(--neon);color:#000}
+.btn-cancel{background:#333;color:#fff}
 </style>
 </head>
 
 <body>
+<div class="app">
 
-<div class="header">
-  <h1>📅 Kalender Pembayaran</h1>
+<header>
+  <h1>📅 Kalender Pembayaran MAKA</h1>
+  <small id="info"></small>
+</header>
+
+<div class="calendar">
+  <div class="week">
+    <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+  </div>
+  <div id="grid" class="grid"></div>
 </div>
 
-<div class="calendar" id="calendar"></div>
+</div>
 
-<div class="popup" id="popup">
-  <h3 id="popup-date"></h3>
-  <p id="popup-status"></p>
-  <button onclick="closePopup()">Tutup</button>
+<!-- POPUP -->
+<div id="popup" class="popup">
+  <div class="popup-box">
+    <h3 id="popup-date"></h3>
+    <p id="popup-status"></p>
+    <button class="btn-ok" onclick="confirmPay()">Tandai Sudah Bayar</button>
+    <button class="btn-cancel" onclick="closePopup()">Batal</button>
+  </div>
 </div>
 
 <script>
-/* ========= SETTING DASAR ========= */
-// USER AMBIL MOTOR
-const USER_START_DATE = '2025-09-18'; // contoh
+/* =========================
+   SETTING USER (DARI FORM)
+========================= */
+const USER = {
+  ambilMotor: '2025-09-18',
+  dpType: '355',      // '355' atau '755'
+  dpPaidCount: 3,     // 0 - 6
+  hasMakaPlus: false // false = 70rb/hari
+};
 
-/* ========= LOGIC ========= */
-const calendar = document.getElementById('calendar');
-const popup = document.getElementById('popup');
+/* ========================= */
+const grid = document.getElementById('grid');
+const info = document.getElementById('info');
 
-function generateCalendar(){
-  const start = new Date(USER_START_DATE);
-  start.setDate(start.getDate()+1); // H+1
+const START = new Date(USER.ambilMotor);
+START.setDate(START.getDate()+1); // H+1
 
+let selectedDate = null;
+
+info.innerText =
+  `DP ${USER.dpType} | Cicilan DP: ${USER.dpPaidCount}/6 | Maka+: ${USER.hasMakaPlus?'Aktif':'Belum'}`;
+
+function isLibur(day){
+  if(day === 31) return true;
+
+  if(USER.dpType === '755'){
+    if(day === 14 || day === 28) return true;
+  }
+
+  if(USER.dpType === '355'){
+    if(USER.dpPaidCount >= 6){
+      if(day === 14 || day === 28) return true;
+    }
+  }
+  return false;
+}
+
+function render(){
+  grid.innerHTML='';
   for(let i=1;i<=30;i++){
-    const d = new Date(start);
-    d.setDate(start.getDate()+i-1);
-
+    const d = new Date(START);
+    d.setDate(START.getDate()+i-1);
     const day = d.getDate();
-    const div = document.createElement('div');
-    div.className = 'day';
 
-    let status='BAYAR';
-    if(day===14||day===28||day===31){
-      status='LIBUR';
-      div.classList.add('off');
+    const cell = document.createElement('div');
+    cell.className='day';
+
+    let status='';
+    if(isLibur(day)){
+      cell.classList.add('off');
+      status='⛔ Libur Pembayaran';
     }else{
-      div.classList.add('pay');
+      cell.classList.add('pay');
+      status = USER.hasMakaPlus
+        ? '✅ Gratis (MAKA+)'
+        : '💰 Bayar 70rb';
     }
 
-    div.textContent = day;
-
-    div.onclick=()=>{
-      openPopup(d,status);
+    cell.innerText=day;
+    cell.onclick=()=>{
+      if(cell.classList.contains('off')) return;
+      selectedDate = cell;
+      document.getElementById('popup-date').innerText =
+        d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+      document.getElementById('popup-status').innerText = status;
+      document.getElementById('popup').style.display='flex';
     };
 
-    calendar.appendChild(div);
+    grid.appendChild(cell);
   }
 }
 
-function openPopup(date,status){
-  document.getElementById('popup-date').innerText =
-    date.toLocaleDateString('id-ID',{dateStyle:'full'});
-  document.getElementById('popup-status').innerText =
-    status==='BAYAR'
-    ? '✅ Hari ini wajib bayar'
-    : '⛔ Libur pembayaran';
-  popup.style.display='block';
-}
-
 function closePopup(){
-  popup.style.display='none';
+  document.getElementById('popup').style.display='none';
 }
 
-generateCalendar();
-</script>
+function confirmPay(){
+  if(selectedDate){
+    selectedDate.classList.remove('pay');
+    selectedDate.classList.add('paid');
+  }
+  closePopup();
+}
 
+render();
+</script>
 </body>
 </html>
