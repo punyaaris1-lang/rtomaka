@@ -1,90 +1,28 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Kalender</title>
-<link rel="stylesheet" href="styles.css">
-</head>
 
-<body>
-<div class="app">
-
-  <!-- HEADER -->
-  <header class="calendar-header">
-    <h1>Kalender</h1>
-    <p>Jadwal & Pembayaran</p>
-  </header>
-
-  <!-- MONTH NAV -->
-  <div class="calendar-nav">
-    <button onclick="changeMonth(-1)">‹</button>
-    <div id="monthYear"></div>
-    <button onclick="changeMonth(1)">›</button>
-  </div>
-
-  <!-- DAYS -->
-  <div class="calendar-week">
-    <div>Min</div><div>Sen</div><div>Sel</div>
-    <div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
-  </div>
-
-  <!-- CALENDAR GRID -->
-  <div class="calendar-grid" id="calendar"></div>
-
+<!doctype html><html lang="id"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Kalender Sewa</title><link rel="stylesheet" href="styles.css"/></head><body>
+<div class="app-container">
+  <header class="header"><div class="user-info"><h1>📅 Kalender Sewa</h1><p class="small-muted">Klik tanggal untuk melihat status / tandai bayar.</p></div></header>
+  <section class="calendar-controls"><div style="display:flex;align-items:center;gap:12px;padding:0 18px 8px;"><button id="prevBtn" class="icon-item" style="width:44px;height:40px">◀</button><h2 id="current-month-year" style="margin:0;flex:1;text-align:center"></h2><button id="nextBtn" class="icon-item" style="width:44px;height:40px">▶</button></div></section>
+  <div class="weekdays"><span>Min</span><span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span></div>
+  <div id="calendar-grid" class="calendar-grid"></div>
 </div>
-
-<!-- BOTTOM NAV -->
-<div class="nav">
-  <a href="lokasi_fc.html"><span>⚡</span>FC</a>
-  <a href="index.html"><span>🏠</span>Home</a>
-  <a href="daftar_antrian.html"><span>🎫</span>Antrian</a>
-</div>
-
+<div id="dayModal" class="modal-overlay"><div class="modal-content"><h3 id="modal-date"></h3><p id="modal-status"></p><div style="margin-top:12px"><button id="markPaidBtn" class="modal-btn primary-btn">Tandai Sudah Bayar</button> <button id="closeModal" class="modal-btn secondary-btn">Tutup</button></div></div></div>
 <script>
-const calendarEl = document.getElementById("calendar");
-const monthYearEl = document.getElementById("monthYear");
-
-let date = new Date();
-
-function renderCalendar() {
-  calendarEl.innerHTML = "";
-
-  const year = date.getFullYear();
-  const month = date.getMonth();
-
-  monthYearEl.innerText = date.toLocaleDateString("id-ID", {
-    month: "long",
-    year: "numeric"
-  });
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
-
-  for (let i = 0; i < firstDay; i++) {
-    calendarEl.innerHTML += `<div class="empty"></div>`;
-  }
-
-  for (let d = 1; d <= lastDate; d++) {
-    const today =
-      d === new Date().getDate() &&
-      month === new Date().getMonth() &&
-      year === new Date().getFullYear();
-
-    calendarEl.innerHTML += `
-      <div class="day ${today ? "today" : ""}">
-        ${d}
-      </div>`;
-  }
-}
-
-function changeMonth(step) {
-  date.setMonth(date.getMonth() + step);
-  renderCalendar();
-}
-
-renderCalendar();
+const userStart = localStorage.getItem('maka_user_start') || '2025-09-18';
+const userDp = localStorage.getItem('maka_user_dp') || '355';
+const USER_TGL_MULAI_SEWA = new Date(userStart);
+const DP_START = new Date(USER_TGL_MULAI_SEWA.getFullYear(), USER_TGL_MULAI_SEWA.getMonth()+1,1);
+const DP_END = new Date(DP_START.getFullYear(), DP_START.getMonth()+3,1);
+let currentDate = new Date(); currentDate.setDate(1);
+let savedPayments = JSON.parse(localStorage.getItem('maka_payments'))||{};
+let selectedEl=null;
+function getDayStatus(d){ const day=d.getDate(); if(day===31) return 'HLB'; if(userDp==='355'){ if(d>=DP_START && d<DP_END && (day===14||day===28)) return 'CDP'; if(d>=DP_END && (day===14||day===28)) return 'HLB'; } else if(userDp==='775'){ if(day===14||day===28) return 'HLB'; } return 'HWB'; }
+function render(){ const grid=document.getElementById('calendar-grid'); const monthYear=document.getElementById('current-month-year'); monthYear.textContent = currentDate.toLocaleString('id-ID',{month:'long',year:'numeric'}); grid.innerHTML=''; const year=currentDate.getFullYear(); const month=currentDate.getMonth(); const firstDay=new Date(year,month,1); const startDay=firstDay.getDay(); const daysInMonth=new Date(year,month+1,0).getDate(); for(let i=0;i<startDay;i++){grid.innerHTML+='<div class="day empty"></div>'} for(let d=1; d<=daysInMonth; d++){ const dt = new Date(year,month,d); const key = `${year}-${month+1}-${d}`; const status = getDayStatus(dt); const isBeforePickup = dt <= USER_TGL_MULAI_SEWA; let cls=''; if(status==='HLB') cls='holiday'; else if(status==='CDP') cls='cicilan-dp'; else cls='wajib-bayar'; const paid = savedPayments[key]===true; const paidClass = paid? 'paid':''; const disabled = (isBeforePickup || status==='HLB')? 'disabled':''; grid.innerHTML+=`<div class="day ${cls} ${paidClass} ${disabled}" data-key="${key}" data-status="${status}" data-date="${dt.toISOString()}" onclick="onDayClick(this)"><span class="day-number">${d}</span></div>`; } const totalCells = startDay+daysInMonth; const rem = (totalCells%7===0)?0:7-(totalCells%7); for(let i=0;i<rem;i++){grid.innerHTML+='<div class="day empty"></div>'} }
+window.onDayClick = function(el){ const disabled = el.classList.contains('disabled'); const status = el.getAttribute('data-status'); const dateISO = el.getAttribute('data-date'); const date = new Date(dateISO); selectedEl = el; document.getElementById('modal-date').textContent = date.toLocaleDateString('id-ID'); document.getElementById('modal-status').textContent = `Status: ${status} ${el.classList.contains('paid')? '(Sudah bayar)':''}`; if(disabled){ document.getElementById('markPaidBtn').style.display='none'; } else { document.getElementById('markPaidBtn').style.display='inline-block'; } document.getElementById('dayModal').classList.add('active'); }
+document.getElementById('closeModal').addEventListener('click', ()=>{ document.getElementById('dayModal').classList.remove('active'); selectedEl=null; });
+document.getElementById('markPaidBtn').addEventListener('click', ()=>{ if(!selectedEl) return; const key = selectedEl.getAttribute('data-key'); const paid = savedPayments[key]===true; if(paid) { savedPayments[key]=false; selectedEl.classList.remove('paid'); } else { savedPayments[key]=true; selectedEl.classList.add('paid'); } localStorage.setItem('maka_payments', JSON.stringify(savedPayments)); document.getElementById('dayModal').classList.remove('active'); selectedEl=null; });
+document.getElementById('prevBtn').addEventListener('click', ()=>{ currentDate.setMonth(currentDate.getMonth()-1); render(); });
+document.getElementById('nextBtn').addEventListener('click', ()=>{ currentDate.setMonth(currentDate.getMonth()+1); render(); });
+render();
 </script>
-
-</body>
-</html>
+</body></html>

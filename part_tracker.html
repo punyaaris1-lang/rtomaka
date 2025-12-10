@@ -1,0 +1,14 @@
+
+<!doctype html><html lang="id"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Gratisan</title><link rel="stylesheet" href="styles.css"/></head><body>
+<div class="app-container">
+  <header class="header"><div class="user-info"><h1>Gratisan</h1><p class="small-muted">Cek jatah part per tahun</p></div></header>
+  <section style="padding:18px"><div id="parts"></div><div style="margin-top:12px"><button id="adminAdd" class="modal-btn primary-btn">Tambah Part (Admin)</button></div></section>
+</div>
+<script>
+const defaultParts=[{key:'ban_depan',name:'Ban Depan',limit:1},{key:'ban_belakang',name:'Ban Belakang',limit:1},{key:'kampas_depan',name:'Kampas Depan',limit:3},{key:'kampas_belakang',name:'Kampas Belakang',limit:3},{key:'komstir',name:'Komstir',limit:1}];
+function render(){ const adminList=JSON.parse(localStorage.getItem('maka_admin_parts'))||[]; const combined=[...defaultParts]; const keys=combined.map(p=>p.key); adminList.forEach(p=>{ if(!keys.includes(p.key)) combined.push(p); }); const usage=JSON.parse(localStorage.getItem('maka_part_usage'))||{}; const cont=document.getElementById('parts'); cont.innerHTML=''; combined.forEach(p=>{ const used=usage[p.key]||0; const remaining=Math.max(0,p.limit-used); cont.innerHTML+=`<div style="background:var(--card-bg);padding:12px;border-radius:10px;border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><strong>${p.name}</strong><div class="small-muted">Sisa jatah: ${remaining} / ${p.limit} per tahun</div></div><div><button onclick="markUsed('${p.key}')" class="modal-btn primary-btn" style="padding:8px 10px">Catat</button></div></div>`; }); }
+function markUsed(k){ const usage=JSON.parse(localStorage.getItem('maka_part_usage'))||{}; usage[k]=(usage[k]||0)+1; localStorage.setItem('maka_part_usage', JSON.stringify(usage)); alert('Dicatat'); render(); }
+document.getElementById('adminAdd').addEventListener('click', ()=>{ const key=prompt('Key part (tanpa spasi)'); if(!key) return; const name=prompt('Nama part'); if(!name) return; const limit=parseInt(prompt('Limit per tahun (angka)'),10)||1; const list=JSON.parse(localStorage.getItem('maka_admin_parts'))||[]; list.push({key,name,limit}); localStorage.setItem('maka_admin_parts', JSON.stringify(list)); render(); });
+render();
+</script>
+</body></html>

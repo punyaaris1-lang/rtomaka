@@ -1,0 +1,18 @@
+
+<!doctype html><html lang="id"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>MAKA+</title><link rel="stylesheet" href="styles.css"/></head><body>
+<div class="app-container">
+  <header class="header"><div class="user-info"><h1>MAKA+</h1><p class="small-muted">Aktifkan untuk layanan tambahan</p></div></header>
+  <section style="padding:18px">
+    <div style="display:flex;gap:10px;align-items:center">
+      <div style="flex:1"><p style="margin:0;font-weight:700">Status MAKA+</p><small id="mp-info" class="small-muted">Belum aktif</small></div>
+      <div><button id="mpToggle" class="modal-btn primary-btn">Aktifkan</button></div>
+    </div>
+  </section>
+</div>
+<script>
+const btn=document.getElementById('mpToggle');
+function refresh(){ const mp=JSON.parse(localStorage.getItem('maka_plus_status'))||{active:false}; const info=document.getElementById('mp-info'); if(mp.active){ info.textContent=`Aktif sejak ${new Date(mp.activated_at).toLocaleDateString()}`; btn.textContent='Nonaktifkan'; } else { info.textContent='Belum aktif'; btn.textContent='Aktifkan'; } }
+btn.addEventListener('click', ()=>{ let mp=JSON.parse(localStorage.getItem('maka_plus_status'))||{active:false}; if(mp.active){ localStorage.setItem('maka_plus_status', JSON.stringify({active:false})); } else { localStorage.setItem('maka_plus_status', JSON.stringify({active:true,activated_at:new Date().toISOString()})); } refresh(); alert('Status MAKA+ diperbarui'); });
+refresh();
+</script>
+</body></html>
