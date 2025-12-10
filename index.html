@@ -1,1 +1,194 @@
-<!doctype html><meta http-equiv='refresh' content='0;url=dashboard.html'>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar MAKA</title>
+
+<link rel="stylesheet" href="assets/app.css">
+
+<style>
+.page{
+ min-height:100vh;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:20px;
+}
+
+.card{
+ width:100%;
+ max-width:390px;
+ background:linear-gradient(180deg,#141a38,#090d22);
+ border-radius:24px;
+ padding:26px 22px;
+ box-shadow:0 35px 70px rgba(0,0,0,.7);
+ border:1px solid rgba(255,255,255,.08);
+}
+
+.title{
+ text-align:center;
+ font-size:26px;
+ font-weight:800;
+ letter-spacing:.8px;
+ margin-bottom:4px;
+}
+
+.title span{color:var(--primary)}
+
+.sub{
+ text-align:center;
+ font-size:12px;
+ color:var(--muted);
+ margin-bottom:26px;
+}
+
+.form-group{margin-bottom:16px}
+
+.form-group label{
+ display:block;
+ font-size:12px;
+ color:var(--muted);
+ margin-bottom:6px;
+}
+
+.form-group input,
+.form-group select{
+ width:100%;
+ padding:14px;
+ border-radius:14px;
+ background:#050814;
+ color:var(--text);
+ border:1px solid rgba(255,255,255,.1);
+ font-size:14px;
+ outline:none;
+}
+
+.dp-box{
+ display:flex;
+ gap:10px;
+}
+
+.dp-option{
+ flex:1;
+ padding:14px 10px;
+ border-radius:16px;
+ background:#050814;
+ border:1px solid rgba(255,255,255,.08);
+ text-align:center;
+ cursor:pointer;
+ transition:.25s;
+}
+
+.dp-option.active{
+ background:linear-gradient(135deg,var(--primary),var(--accent));
+ color:#05060d;
+ box-shadow:0 0 20px rgba(91,124,255,.6);
+}
+
+.dp-option small{
+ display:block;
+ font-size:11px;
+ margin-top:6px;
+}
+
+.btn{
+ margin-top:16px;
+ width:100%;
+ padding:14px;
+ border-radius:16px;
+ border:none;
+ font-weight:800;
+ font-size:15px;
+ background:linear-gradient(135deg,var(--primary),var(--accent));
+ color:#05060d;
+ cursor:pointer;
+ box-shadow:0 12px 30px rgba(91,124,255,.55);
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+<div class="card">
+
+<div class="title">MAKA<span>+</span></div>
+<div class="sub">Form Pendaftaran Sewa Motor</div>
+
+<div class="form-group">
+<label>Nama Lengkap</label>
+<input id="name" placeholder="Nama penyewa">
+</div>
+
+<div class="form-group">
+<label>Plat Motor</label>
+<input id="plate" placeholder="B 4248 SWF">
+</div>
+
+<div class="form-group">
+<label>Tanggal Ambil Motor</label>
+<input type="date" id="takeDate">
+</div>
+
+<div class="form-group">
+<label>Pilih DP</label>
+<div class="dp-box">
+ <div class="dp-option active" data-dp="355">
+  DP 355K
+  <small>70K x 6 (14 & 28)</small>
+ </div>
+ <div class="dp-option" data-dp="775">
+  DP 775K
+  <small>Langsung Lunas</small>
+ </div>
+</div>
+</div>
+
+<button class="btn" onclick="register()">DAFTAR & MASUK</button>
+
+</div>
+</div>
+
+<script>
+let selectedDP='355'
+
+document.querySelectorAll('.dp-option').forEach(opt=>{
+ opt.onclick=()=>{
+  document.querySelectorAll('.dp-option').forEach(o=>o.classList.remove('active'))
+  opt.classList.add('active')
+  selectedDP=opt.dataset.dp
+ }
+})
+
+function register(){
+ const name=document.getElementById('name').value.trim()
+ const plate=document.getElementById('plate').value.trim()
+ const takeDate=document.getElementById('takeDate').value
+
+ if(!name||!plate||!takeDate){
+  alert('Lengkapi semua data')
+  return
+ }
+
+ const user={
+  name,
+  plate,
+  take_date:takeDate,
+  dp:selectedDP,
+  registered_at:new Date().toISOString(),
+  maka_plus:false
+ }
+
+ localStorage.setItem('maka_user',JSON.stringify(user))
+
+ window.location.href='dashboard.html'
+}
+
+// auto skip kalau sudah daftar
+if(localStorage.getItem('maka_user')){
+ window.location.href='dashboard.html'
+}
+</script>
+
+</body>
+</html>
