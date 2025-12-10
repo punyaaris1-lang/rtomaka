@@ -1,62 +1,222 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>MAKA Dashboard</title><link rel="stylesheet" href="styles.css"/></head>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAKA Dashboard</title>
+
+<link rel="stylesheet" href="assets/app.css">
+
+<style>
+.app{
+ max-width:420px;
+ margin:auto;
+ padding-bottom:90px;
+}
+
+/* HEADER */
+.header{
+ padding:22px;
+}
+.user-name{
+ font-size:22px;
+ font-weight:800;
+}
+.user-plate{
+ font-size:13px;
+ color:var(--muted);
+ margin-top:4px;
+}
+
+/* HERO */
+.hero{
+ margin:0 22px;
+ background:linear-gradient(135deg,#0d1538,#070b1f);
+ border-radius:22px;
+ padding:20px;
+ border:1px solid rgba(255,255,255,.08);
+ box-shadow:0 24px 50px rgba(0,0,0,.6);
+}
+
+.hero-title{
+ font-size:12px;
+ color:var(--muted);
+ letter-spacing:1px;
+}
+
+.hero-amount{
+ font-size:30px;
+ font-weight:900;
+ color:var(--gold);
+ margin-top:8px;
+}
+
+.hero-sub{
+ font-size:12px;
+ color:var(--muted);
+ margin-top:4px;
+}
+
+/* PROGRESS */
+.progress-wrap{
+ margin-top:16px;
+}
+.progress-bar{
+ height:10px;
+ background:#0b0f24;
+ border-radius:10px;
+ overflow:hidden;
+}
+.progress-fill{
+ height:100%;
+ width:0%;
+ background:linear-gradient(90deg,var(--primary),var(--accent));
+ box-shadow:0 0 12px rgba(91,124,255,.8);
+}
+.progress-text{
+ font-size:11px;
+ color:var(--muted);
+ margin-top:6px;
+ text-align:right;
+}
+
+/* ICON GRID */
+.section{
+ padding:22px;
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:14px;
+}
+.grid-item{
+ background:#070b1f;
+ border-radius:18px;
+ padding:22px 10px;
+ text-align:center;
+ border:1px solid rgba(255,255,255,.07);
+ transition:.25s;
+}
+.grid-item:hover{
+ transform:translateY(-4px);
+ box-shadow:0 18px 40px rgba(0,0,0,.7);
+}
+.grid-item span{
+ font-size:26px;
+ display:block;
+}
+.grid-item p{
+ margin-top:6px;
+ font-size:12px;
+ color:var(--muted);
+ font-weight:700;
+}
+
+/* BOTTOM NAV */
+.nav{
+ position:fixed;
+ bottom:0;
+ left:0;
+ right:0;
+ height:72px;
+ background:linear-gradient(to top,#050813,#0a1030);
+ display:flex;
+ align-items:center;
+ justify-content:space-around;
+ border-top:1px solid rgba(255,255,255,.08);
+}
+.nav a{
+ flex:1;
+ text-align:center;
+ text-decoration:none;
+ color:#777;
+ font-size:11px;
+}
+.nav a span{
+ display:block;
+ font-size:22px;
+}
+.nav .active{
+ color:var(--primary);
+}
+</style>
+</head>
+
 <body>
-<div class="app-container">
-  <header class="header">
-    <a href="admin_login.html" style="position:absolute;top:12px;right:16px;font-size:.8rem;color:#7f8c9a">ADMIN</a>
-    <div class="user-info">
-      <h1 id="user-name-display">Halo, User</h1>
-      <p>Plat Motor <strong id="user-plate-display">-</strong></p>
-    </div>
-    <div class="hero-tunggakan">
-      <div>
-        <h3>STATUS PEMBAYARAN</h3>
-        <p>Perhitungan hingga hari ini</p>
-      </div>
-      <div class="hero-tunggakan-value">
-        <span id="hero-tunggakan-nominal">Rp 0</span>
-        <small id="hero-tunggakan-days">0 Hari</small>
-      </div>
-    </div>
-  </header>
+<div class="app">
 
-  <section class="icon-grid-section">
-    <h2>✨ Fitur Premium</h2>
-    <div class="icon-grid">
-      <a href="calendar.html" class="icon-item"><span>📅</span><p>Bayar & Kalender</p></a>
-      <a href="history.html" class="icon-item"><span>🗒️</span><p>Riwayat</p></a>
-      <a href="part_tracker.html" class="icon-item"><span>🎁</span><p>Gratisan</p></a>
-      <a href="info_mlu.html" class="icon-item"><span>📰</span><p>Info MLU</p></a>
-      <a href="tips_maka.html" class="icon-item"><span>💡</span><p>Tips MAKA</p></a>
-      <a href="#" class="icon-item" onclick="window.open('https://etle-pmj.info','_blank')"><span>🚨</span><p>Cek ETLE</p></a>
-      <a href="settings.html" class="icon-item"><span>⚙️</span><p>Pengaturan</p></a>
-      <a href="maka_plus.html" class="icon-item" id="maka-plus-card"><span>⭐</span><p>MAKA+</p></a>
-      <a href="https://wa.me/62812XXXXXXXX?text=SOS%20MAKA%20DARURAT" target="_blank" class="icon-item sos-card"><span>🚨</span><p>SOS Darurat</p></a>
-    </div>
-  </section>
+<!-- HEADER -->
+<div class="header">
+ <div class="user-name" id="userName">-</div>
+ <div class="user-plate" id="userPlate">-</div>
+</div>
 
-  <footer class="bottom-nav">
-    <a href="lokasi_fc.html" class="nav-item"><span>⚡</span>FC</a>
-    <a href="dashboard.html" class="nav-item active"><span>🏠</span>Home</a>
-    <a href="daftar_antrian.html" class="nav-item"><span>🎫</span>Antrian</a>
-  </footer>
+<!-- HERO -->
+<div class="hero">
+ <div class="hero-title">TOTAL TUNGGAKAN</div>
+ <div class="hero-amount" id="tunggakan">Rp 0</div>
+ <div class="hero-sub">Sejak mulai sewa</div>
+
+ <div class="progress-wrap">
+  <div class="progress-bar">
+   <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-text" id="progressText">0 / 1009 hari</div>
+ </div>
+</div>
+
+<!-- ICON GRID -->
+<div class="section">
+ <div class="grid">
+  <a href="calendar.html" class="grid-item"><span>📅</span><p>Kalender</p></a>
+  <a href="history.html" class="grid-item"><span>🗒️</span><p>Riwayat</p></a>
+  <a href="gratisan.html" class="grid-item"><span>🎁</span><p>Gratisan</p></a>
+  <a href="maka_plus.html" class="grid-item"><span>⭐</span><p>MAKA+</p></a>
+  <a href="info_mlu.html" class="grid-item"><span>📰</span><p>Info MLU</p></a>
+  <a href="settings.html" class="grid-item"><span>⚙️</span><p>Pengaturan</p></a>
+ </div>
+</div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+ <a href="lokasi_fc.html"><span>⚡</span>FC</a>
+ <a class="active" href="dashboard.html"><span>🏠</span>Home</a>
+ <a href="daftar_antrian.html"><span>🎫</span>Antrian</a>
 </div>
 
 <script>
-const USER_TGL_MULAI_SEWA = localStorage.getItem('maka_user_start') || '2025-09-18';
-const USER_OPSI_DP = localStorage.getItem('maka_user_dp') || '355';
-const MAKA_PLUS_RATE = 10000;
-const ADMIN_FINANCE = JSON.parse(localStorage.getItem('maka_finance_settings')) || { hwb_rate:80000, cdp_rate:70000 };
-const USER_TARIF_HARIAN = ADMIN_FINANCE.hwb_rate;
-const USER_TARIF_CDP = ADMIN_FINANCE.cdp_rate;
-const DP_START = new Date(new Date(USER_TGL_MULAI_SEWA).getFullYear(), new Date(USER_TGL_MULAI_SEWA).getMonth()+1,1);
-const DP_END = new Date(DP_START.getFullYear(), DP_START.getMonth()+3,1);
-function getStatus(d){const day=d.getDate(); if(day===31) return 'HLB'; if(USER_OPSI_DP==='355'){ if(d>=DP_START && d<DP_END && (day===14||day===28)) return 'CDP'; if(d>=DP_END && (day===14||day===28)) return 'HLB'; } else if(USER_OPSI_DP==='775'){ if(day===14||day===28) return 'HLB'; } return 'HWB'; }
-function makaPlusCharge(today){ const mp=JSON.parse(localStorage.getItem('maka_plus_status'))||{active:false}; if(!mp.active) return 0; const start=new Date(mp.activated_at); start.setDate(start.getDate()+1); if(today<start) return 0; const days=Math.floor((today-start)/86400000)+1; return days*MAKA_PLUS_RATE; }
-function calc(){ const now=new Date(); now.setHours(0,0,0,0); const start=new Date(USER_TGL_MULAI_SEWA); start.setHours(0,0,0,0); let total=0, days=0; const paid = JSON.parse(localStorage.getItem('maka_payments'))||{}; let cur=new Date(start); while(cur<=now){ const k=`${cur.getFullYear()}-${cur.getMonth()+1}-${cur.getDate()}`; if(!paid[k]){ const s=getStatus(cur); if(s==='HWB'){ total+=USER_TARIF_HARIAN; days++; } if(s==='CDP'){ total+=USER_TARIF_CDP; days++; } } cur.setDate(cur.getDate()+1); } total += makaPlusCharge(now); return {total, days}; }
-document.addEventListener('DOMContentLoaded', ()=>{ let user=JSON.parse(localStorage.getItem('maka_user_data'))||{name:'M Rizky Firdaus', plate:'B 4248 SWF'}; document.getElementById('user-name-display').textContent=`Halo, ${user.name}`; document.getElementById('user-plate-display').textContent=user.plate; const r=calc(); document.getElementById('hero-tunggakan-nominal').textContent=`Rp ${r.total.toLocaleString('id-ID')}`; document.getElementById('hero-tunggakan-days').textContent=`${r.days} Hari`; const mp = JSON.parse(localStorage.getItem('maka_plus_status'))||{active:false}; const mpCard = document.getElementById('maka-plus-card'); if(mp.active) mpCard.querySelector('p').textContent = `MAKA+ Aktif (mulai ${new Date(mp.activated_at).toLocaleDateString()})`; });
+const user=JSON.parse(localStorage.getItem('maka_user'))
+if(!user){location='index.html'}
+
+document.getElementById('userName').textContent='Halo, '+user.name
+document.getElementById('userPlate').textContent=user.plate
+
+// ==== HITUNG HARI ====
+const start=new Date(user.take_date)
+const today=new Date()
+start.setHours(0,0,0,0)
+today.setHours(0,0,0,0)
+
+const days=Math.max(0,Math.floor((today-start)/86400000))
+const totalHari=1009
+
+// ==== TUNGGAKAN (SIMPLE MODE) ====
+let daily=70000
+if(user.maka_plus) daily=80000
+
+const total=days*daily
+
+document.getElementById('tunggakan').textContent=
+ 'Rp '+total.toLocaleString('id-ID')
+
+// ==== PROGRESS ====
+const pct=Math.min(100,(days/totalHari)*100)
+document.getElementById('progressFill').style.width=pct+'%'
+document.getElementById('progressText').textContent=
+ `${days} / ${totalHari} hari`
 </script>
+
 </body>
 </html>
