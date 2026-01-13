@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Motor MCU</title>
+    <title>List Motor Kena MCU</title>
     <style>
         :root {
             --primary: #00d2ff;
@@ -13,6 +13,8 @@
             --text: #e2e8f0;
             --input-bg: #334155;
             --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
 
         body {
@@ -29,12 +31,13 @@
 
         h2 {
             margin-bottom: 20px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+            background: linear-gradient(to right, #fbbf24, #ef4444); /* Warna agak warning untuk MCU */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
+            text-align: center;
         }
 
         /* Container Style */
@@ -68,7 +71,7 @@
             border-radius: 8px;
             color: white;
             font-size: 1em;
-            box-sizing: border-box; /* Fix padding issue */
+            box-sizing: border-box; 
             outline: none;
             transition: 0.3s;
         }
@@ -86,13 +89,13 @@
         }
 
         button {
-            flex: 1;
             padding: 12px;
             border: none;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             transition: transform 0.2s;
+            width: 100%;
         }
 
         button:active {
@@ -107,12 +110,8 @@
         .btn-export {
             background: var(--success);
             color: white;
-        }
-
-        .btn-clear {
-            background: #ef4444;
-            color: white;
-            flex: 0.5;
+            width: auto;
+            padding: 8px 16px;
         }
 
         /* Table Preview */
@@ -148,31 +147,37 @@
             border-bottom: none;
         }
 
-        .tag {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
+        /* Badges for Decision */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.85em;
             font-weight: bold;
+            display: inline-block;
         }
-        .tag-rto { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
-        .tag-transgo { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+
+        .status-kembalikan { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+        .status-pikir { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #fbbf24; }
+        .status-lanjut { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #34d399; }
+        
+        .row-transgo { color: #94a3b8; } /* Optional: text color for row */
 
     </style>
 </head>
 <body>
 
-    <h2>DATA MOTOR MCU</h2>
+    <h2>List Motor Kena MCU</h2>
 
     <div class="container">
         <form id="dataForm">
             <div class="form-group">
-                <label>Nama Driver</label>
-                <input type="text" id="nama" placeholder="Contoh: Budi Santoso" required>
+                <label>Nama Customer/Driver</label>
+                <input type="text" id="nama" placeholder="Nama..." required>
             </div>
 
             <div class="form-group">
                 <label>Plat Nomor</label>
-                <input type="text" id="plat" placeholder="Contoh: B 1234 XYZ" style="text-transform: uppercase;" required>
+                <input type="text" id="plat" placeholder="B XXXX ABC" style="text-transform: uppercase;" required>
             </div>
 
             <div class="form-group">
@@ -184,42 +189,42 @@
             </div>
 
             <div class="form-group">
-                <label>Jadwal Towing</label>
-                <input type="datetime-local" id="jadwal" required>
+                <label>Status Jadwal Towing</label>
+                <select id="jadwal" required>
+                    <option value="Belum Ada Jadwal">Belum Ada Jadwal</option>
+                    <option value="Sudah Ada Jadwal">Sudah Ada Jadwal</option>
+                </select>
             </div>
 
             <div class="form-group">
-                <label>Ditawarkan Sewa Motor?</label>
-                <select id="sewa">
-                    <option value="Belum">Belum Ditawarkan</option>
-                    <option value="Sudah - Setuju">Sudah (Setuju)</option>
-                    <option value="Sudah - Menolak">Sudah (Menolak)</option>
+                <label style="color: #fbbf24;">Keputusan Customer (Auto Sort)</label>
+                <select id="keputusan" required style="border: 1px solid #fbbf24;">
+                    <option value="Kembalikan Unit">Kembalikan Unit</option>
+                    <option value="Pikir - Pikir">Pikir - Pikir</option>
+                    <option value="Lanjut Pake Maka">Lanjut Pake Maka</option>
                 </select>
             </div>
 
             <div class="btn-group">
-                <button type="submit" class="btn-submit">➕ Tambah Data</button>
+                <button type="submit" class="btn-submit">💾 Simpan Data</button>
             </div>
         </form>
     </div>
 
     <div class="table-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="color: #94a3b8; font-size: 0.9em;">Preview Data:</span>
-            <div style="display: flex; gap: 5px;">
-                <button onclick="downloadExcel()" class="btn-export">📥 Download Excel</button>
-                <button onclick="clearData()" class="btn-clear">🗑️ Reset</button>
-            </div>
+            <span style="color: #94a3b8; font-size: 0.9em;">Data (Otomatis urut berdasarkan Prioritas):</span>
+            <button onclick="downloadExcel()" class="btn-export">📥 Download Excel</button>
         </div>
         
         <table id="dataTable">
             <thead>
                 <tr>
                     <th>Nama</th>
-                    <th>Plat Nomor</th>
+                    <th>Plat</th>
                     <th>Tipe</th>
-                    <th>Jadwal Towing</th>
-                    <th>Sewa Motor</th>
+                    <th>Jadwal</th>
+                    <th>Keputusan</th>
                 </tr>
             </thead>
             <tbody>
@@ -228,11 +233,11 @@
     </div>
 
     <script>
-        // Load data dari LocalStorage saat web dibuka
-        let dataList = JSON.parse(localStorage.getItem('towingData')) || [];
+        // Load data dari LocalStorage
+        let dataList = JSON.parse(localStorage.getItem('mcuData')) || [];
         renderTable();
 
-        // Handle Submit Form
+        // Handle Submit
         document.getElementById('dataForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -240,74 +245,83 @@
                 nama: document.getElementById('nama').value,
                 plat: document.getElementById('plat').value.toUpperCase(),
                 kategori: document.getElementById('kategori').value,
-                jadwal: document.getElementById('jadwal').value.replace('T', ' '),
-                sewa: document.getElementById('sewa').value
+                jadwal: document.getElementById('jadwal').value,
+                keputusan: document.getElementById('keputusan').value
             };
 
             dataList.push(newData);
-            localStorage.setItem('towingData', JSON.stringify(dataList)); // Simpan ke memory browser
-            
-            renderTable();
-            this.reset(); // Kosongkan form setelah input
+            updateStorageAndRender();
+            this.reset();
+            // Kembalikan default select
+            document.getElementById('kategori').value = "RTO";
+            document.getElementById('jadwal').value = "Belum Ada Jadwal";
+            document.getElementById('keputusan').value = "Kembalikan Unit";
         });
 
-        // Fungsi Render Tabel
+        function updateStorageAndRender() {
+            localStorage.setItem('mcuData', JSON.stringify(dataList));
+            renderTable();
+        }
+
+        // Fungsi Sorting & Render
         function renderTable() {
             const tbody = document.querySelector('#dataTable tbody');
             tbody.innerHTML = '';
 
+            // LOGIKA SORTING (Kembalikan > Pikir > Lanjut)
+            const priority = {
+                "Kembalikan Unit": 1,
+                "Pikir - Pikir": 2,
+                "Lanjut Pake Maka": 3
+            };
+
+            dataList.sort((a, b) => {
+                return (priority[a.keputusan] || 99) - (priority[b.keputusan] || 99);
+            });
+
             dataList.forEach((item) => {
                 const tr = document.createElement('tr');
-                // Style badge untuk RTO/Transgo
-                const badgeClass = item.kategori === 'RTO' ? 'tag-rto' : 'tag-transgo';
+                
+                // Tentukan Class Badge untuk warna
+                let badgeClass = '';
+                if(item.keputusan === 'Kembalikan Unit') badgeClass = 'status-kembalikan';
+                else if(item.keputusan === 'Pikir - Pikir') badgeClass = 'status-pikir';
+                else badgeClass = 'status-lanjut';
                 
                 tr.innerHTML = `
                     <td>${item.nama}</td>
                     <td><strong>${item.plat}</strong></td>
-                    <td><span class="tag ${badgeClass}">${item.kategori}</span></td>
+                    <td>${item.kategori}</td>
                     <td>${item.jadwal}</td>
-                    <td>${item.sewa}</td>
+                    <td><span class="badge ${badgeClass}">${item.keputusan}</span></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // Fungsi Download ke Excel (CSV)
+        // Fungsi Download Excel
         function downloadExcel() {
             if(dataList.length === 0) {
-                alert("Belum ada data untuk didownload!");
+                alert("Data kosong!");
                 return;
             }
 
             let csvContent = "data:text/csv;charset=utf-8,";
-            // Header Excel
-            csvContent += "Nama,Plat Nomor,Kategori,Jadwal Towing,Status Sewa Motor\n";
+            csvContent += "Nama,Plat Nomor,Kategori,Status Jadwal,Keputusan Customer\n";
 
-            // Isi Data
-            dataList.forEach(function(rowArray) {
-                let row = `${rowArray.nama},${rowArray.plat},${rowArray.kategori},${rowArray.jadwal},${rowArray.sewa}`;
-                csvContent += row + "\n";
+            dataList.forEach(function(row) {
+                let rowString = `${row.nama},${row.plat},${row.kategori},${row.jadwal},${row.keputusan}`;
+                csvContent += rowString + "\n";
             });
 
-            // Proses Download
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Data_Towing_" + new Date().toISOString().slice(0,10) + ".csv");
+            link.setAttribute("download", "List_Motor_MCU_" + new Date().toISOString().slice(0,10) + ".csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
-
-        // Fungsi Hapus Semua Data
-        function clearData() {
-            if(confirm("Yakin ingin menghapus semua data di tabel?")) {
-                dataList = [];
-                localStorage.removeItem('towingData');
-                renderTable();
-            }
-        }
     </script>
 </body>
-  </html>
-  
+</html>
