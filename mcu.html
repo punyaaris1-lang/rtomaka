@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Motor MCU</title>
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #e2e8f0;
+            --input-bg: #334155;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Container Style */
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Form Group */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #94a3b8;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: var(--input-bg);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+            box-sizing: border-box; /* Fix padding issue */
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-submit {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            color: white;
+        }
+
+        .btn-export {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-clear {
+            background: #ef4444;
+            color: white;
+            flex: 0.5;
+        }
+
+        /* Table Preview */
+        .table-container {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 800px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card);
+            border-radius: 12px;
+            overflow: hidden;
+            font-size: 0.9em;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        th {
+            background-color: rgba(0,0,0,0.2);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tag {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .tag-rto { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .tag-transgo { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+
+    </style>
+</head>
+<body>
+
+    <h2>Input Data Towing</h2>
+
+    <div class="container">
+        <form id="dataForm">
+            <div class="form-group">
+                <label>Nama Customer/Driver</label>
+                <input type="text" id="nama" placeholder="Contoh: Budi Santoso" required>
+            </div>
+
+            <div class="form-group">
+                <label>Plat Nomor</label>
+                <input type="text" id="plat" placeholder="Contoh: B 1234 XYZ" style="text-transform: uppercase;" required>
+            </div>
+
+            <div class="form-group">
+                <label>Kategori Unit</label>
+                <select id="kategori" required>
+                    <option value="RTO">RTO</option>
+                    <option value="Transgo">Transgo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Jadwal Towing</label>
+                <input type="datetime-local" id="jadwal" required>
+            </div>
+
+            <div class="form-group">
+                <label>Ditawarkan Sewa Motor?</label>
+                <select id="sewa">
+                    <option value="Belum">Belum Ditawarkan</option>
+                    <option value="Sudah - Setuju">Sudah (Setuju)</option>
+                    <option value="Sudah - Menolak">Sudah (Menolak)</option>
+                </select>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn-submit">➕ Tambah Data</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="color: #94a3b8; font-size: 0.9em;">Preview Data:</span>
+            <div style="display: flex; gap: 5px;">
+                <button onclick="downloadExcel()" class="btn-export">📥 Download Excel</button>
+                <button onclick="clearData()" class="btn-clear">🗑️ Reset</button>
+            </div>
+        </div>
+        
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Plat Nomor</th>
+                    <th>Tipe</th>
+                    <th>Jadwal Towing</th>
+                    <th>Sewa Motor</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Load data dari LocalStorage saat web dibuka
+        let dataList = JSON.parse(localStorage.getItem('towingData')) || [];
+        renderTable();
+
+        // Handle Submit Form
+        document.getElementById('dataForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const newData = {
+                nama: document.getElementById('nama').value,
+                plat: document.getElementById('plat').value.toUpperCase(),
+                kategori: document.getElementById('kategori').value,
+                jadwal: document.getElementById('jadwal').value.replace('T', ' '),
+                sewa: document.getElementById('sewa').value
+            };
+
+            dataList.push(newData);
+            localStorage.setItem('towingData', JSON.stringify(dataList)); // Simpan ke memory browser
+            
+            renderTable();
+            this.reset(); // Kosongkan form setelah input
+        });
+
+        // Fungsi Render Tabel
+        function renderTable() {
+            const tbody = document.querySelector('#dataTable tbody');
+            tbody.innerHTML = '';
+
+            dataList.forEach((item) => {
+                const tr = document.createElement('tr');
+                // Style badge untuk RTO/Transgo
+                const badgeClass = item.kategori === 'RTO' ? 'tag-rto' : 'tag-transgo';
+                
+                tr.innerHTML = `
+                    <td>${item.nama}</td>
+                    <td><strong>${item.plat}</strong></td>
+                    <td><span class="tag ${badgeClass}">${item.kategori}</span></td>
+                    <td>${item.jadwal}</td>
+                    <td>${item.sewa}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Fungsi Download ke Excel (CSV)
+        function downloadExcel() {
+            if(dataList.length === 0) {
+                alert("Belum ada data untuk didownload!");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            // Header Excel
+            csvContent += "Nama,Plat Nomor,Kategori,Jadwal Towing,Status Sewa Motor\n";
+
+            // Isi Data
+            dataList.forEach(function(rowArray) {
+                let row = `${rowArray.nama},${rowArray.plat},${rowArray.kategori},${rowArray.jadwal},${rowArray.sewa}`;
+                csvContent += row + "\n";
+            });
+
+            // Proses Download
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Data_Towing_" + new Date().toISOString().slice(0,10) + ".csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Fungsi Hapus Semua Data
+        function clearData() {
+            if(confirm("Yakin ingin menghapus semua data di tabel?")) {
+                dataList = [];
+                localStorage.removeItem('towingData');
+                renderTable();
+            }
+        }
+    </script>
+</body>
+  </html>
+  
