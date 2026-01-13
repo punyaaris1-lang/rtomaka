@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List Motor Kena MCU</title>
+    <title>List Motor MCU - Realtime</title>
     <style>
         :root {
             --primary: #00d2ff;
@@ -13,8 +13,6 @@
             --text: #e2e8f0;
             --input-bg: #334155;
             --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
         }
 
         body {
@@ -31,16 +29,14 @@
 
         h2 {
             margin-bottom: 20px;
-            background: linear-gradient(to right, #fbbf24, #ef4444); /* Warna agak warning untuk MCU */
+            background: linear-gradient(to right, #fbbf24, #ef4444);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
             text-align: center;
         }
 
-        /* Container Style */
         .container {
             width: 100%;
             max-width: 500px;
@@ -51,10 +47,7 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* Form Group */
-        .form-group {
-            margin-bottom: 15px;
-        }
+        .form-group { margin-bottom: 15px; }
 
         label {
             display: block;
@@ -71,9 +64,8 @@
             border-radius: 8px;
             color: white;
             font-size: 1em;
-            box-sizing: border-box; 
+            box-sizing: border-box;
             outline: none;
-            transition: 0.3s;
         }
 
         input:focus, select:focus {
@@ -81,40 +73,23 @@
             box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.2);
         }
 
-        /* Buttons */
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
         button {
+            width: 100%;
             padding: 12px;
             border: none;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
-            width: 100%;
+            margin-top: 10px;
+            transition: 0.2s;
         }
 
-        button:active {
-            transform: scale(0.98);
-        }
+        .btn-submit { background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; }
+        .btn-export { background: var(--success); color: white; width: auto; padding: 8px 16px; font-size: 0.9em;}
+        
+        button:active { transform: scale(0.98); }
 
-        .btn-submit {
-            background: linear-gradient(45deg, var(--secondary), var(--primary));
-            color: white;
-        }
-
-        .btn-export {
-            background: var(--success);
-            color: white;
-            width: auto;
-            padding: 8px 16px;
-        }
-
-        /* Table Preview */
+        /* Table */
         .table-container {
             margin-top: 30px;
             width: 100%;
@@ -137,30 +112,19 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        th {
-            background-color: rgba(0,0,0,0.2);
-            color: var(--primary);
-            font-weight: 600;
-        }
+        th { background-color: rgba(0,0,0,0.2); color: var(--primary); }
 
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Badges for Decision */
+        /* Status Badges */
         .badge {
             padding: 4px 10px;
             border-radius: 50px;
             font-size: 0.85em;
             font-weight: bold;
-            display: inline-block;
+            white-space: nowrap;
         }
-
         .status-kembalikan { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
         .status-pikir { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #fbbf24; }
         .status-lanjut { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #34d399; }
-        
-        .row-transgo { color: #94a3b8; } /* Optional: text color for row */
 
     </style>
 </head>
@@ -169,60 +133,51 @@
     <h2>List Motor Kena MCU</h2>
 
     <div class="container">
-        <form id="dataForm">
+        <form id="mcuForm">
             <div class="form-group">
                 <label>Nama Customer/Driver</label>
                 <input type="text" id="nama" placeholder="Nama..." required>
             </div>
-
             <div class="form-group">
                 <label>Plat Nomor</label>
                 <input type="text" id="plat" placeholder="B XXXX ABC" style="text-transform: uppercase;" required>
             </div>
-
             <div class="form-group">
                 <label>Kategori Unit</label>
-                <select id="kategori" required>
+                <select id="kategori">
                     <option value="RTO">RTO</option>
                     <option value="Transgo">Transgo</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label>Status Jadwal Towing</label>
-                <select id="jadwal" required>
+                <select id="jadwal">
                     <option value="Belum Ada Jadwal">Belum Ada Jadwal</option>
                     <option value="Sudah Ada Jadwal">Sudah Ada Jadwal</option>
                 </select>
             </div>
-
             <div class="form-group">
-                <label style="color: #fbbf24;">Keputusan Customer (Auto Sort)</label>
-                <select id="keputusan" required style="border: 1px solid #fbbf24;">
+                <label style="color: #fbbf24;">Keputusan Customer</label>
+                <select id="keputusan" style="border: 1px solid #fbbf24;">
                     <option value="Kembalikan Unit">Kembalikan Unit</option>
                     <option value="Pikir - Pikir">Pikir - Pikir</option>
                     <option value="Lanjut Pake Maka">Lanjut Pake Maka</option>
                 </select>
             </div>
-
-            <div class="btn-group">
-                <button type="submit" class="btn-submit">💾 Simpan Data</button>
-            </div>
+            <button type="submit" class="btn-submit" id="btnSave">💾 Simpan ke Database</button>
         </form>
     </div>
 
     <div class="table-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="color: #94a3b8; font-size: 0.9em;">Data (Otomatis urut berdasarkan Prioritas):</span>
-            <button onclick="downloadExcel()" class="btn-export">📥 Download Excel</button>
+            <span style="color: #94a3b8; font-size: 0.9em;">Data Live (Auto Sort):</span>
+            <button id="btnExport" class="btn-export">📥 Excel</button>
         </div>
-        
         <table id="dataTable">
             <thead>
                 <tr>
                     <th>Nama</th>
                     <th>Plat</th>
-                    <th>Tipe</th>
                     <th>Jadwal</th>
                     <th>Keputusan</th>
                 </tr>
@@ -232,96 +187,124 @@
         </table>
     </div>
 
-    <script>
-        // Load data dari LocalStorage
-        let dataList = JSON.parse(localStorage.getItem('mcuData')) || [];
-        renderTable();
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Handle Submit
-        document.getElementById('dataForm').addEventListener('submit', function(e) {
+        // CONFIG DARI ABANG
+        const firebaseConfig = { 
+            apiKey: "AIzaSyALIlkIDALIk83K8s1htalvW6rmNNw02Go", 
+            authDomain: "sistem-antrian-b1c39.firebaseapp.com", 
+            projectId: "sistem-antrian-b1c39", 
+            storageBucket: "sistem-antrian-b1c39.firebasestorage.app", 
+            messagingSenderId: "454124587608", 
+            appId: "1:454124587608:web:34fbb0f5211067a67f982d" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // PENTING: Kita pakai "collection" bukan "doc" biar bisa nyimpen banyak data (list)
+        // Nama database-nya saya buat "data_mcu_towing" biar ga nyampur sama antrian charging
+        const dbRef = collection(db, "data_mcu_towing");
+
+        let currentData = []; // Untuk simpan data excel
+
+        // 1. FUNGSI SIMPAN DATA
+        document.getElementById('mcuForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('btnSave');
+            btn.innerHTML = "Mengirim...";
+            btn.disabled = true;
 
-            const newData = {
-                nama: document.getElementById('nama').value,
-                plat: document.getElementById('plat').value.toUpperCase(),
-                kategori: document.getElementById('kategori').value,
-                jadwal: document.getElementById('jadwal').value,
-                keputusan: document.getElementById('keputusan').value
-            };
-
-            dataList.push(newData);
-            updateStorageAndRender();
-            this.reset();
-            // Kembalikan default select
-            document.getElementById('kategori').value = "RTO";
-            document.getElementById('jadwal').value = "Belum Ada Jadwal";
-            document.getElementById('keputusan').value = "Kembalikan Unit";
+            try {
+                await addDoc(dbRef, {
+                    nama: document.getElementById('nama').value,
+                    plat: document.getElementById('plat').value.toUpperCase(),
+                    kategori: document.getElementById('kategori').value,
+                    jadwal: document.getElementById('jadwal').value,
+                    keputusan: document.getElementById('keputusan').value,
+                    timestamp: serverTimestamp() // Biar tau kapan inputnya
+                });
+                
+                document.getElementById('mcuForm').reset();
+                // Reset select ke default
+                document.getElementById('kategori').value = "RTO";
+                document.getElementById('jadwal').value = "Belum Ada Jadwal";
+                document.getElementById('keputusan').value = "Kembalikan Unit";
+                
+                alert("Data Tersimpan!");
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Gagal simpan: " + error.message);
+            }
+            btn.innerHTML = "💾 Simpan ke Database";
+            btn.disabled = false;
         });
 
-        function updateStorageAndRender() {
-            localStorage.setItem('mcuData', JSON.stringify(dataList));
-            renderTable();
-        }
-
-        // Fungsi Sorting & Render
-        function renderTable() {
+        // 2. FUNGSI BACA DATA LIVE (REALTIME)
+        const q = query(dbRef, orderBy("timestamp", "desc"));
+        
+        onSnapshot(q, (snapshot) => {
             const tbody = document.querySelector('#dataTable tbody');
             tbody.innerHTML = '';
+            currentData = [];
 
-            // LOGIKA SORTING (Kembalikan > Pikir > Lanjut)
+            let rawData = [];
+            snapshot.forEach(doc => {
+                rawData.push(doc.data());
+            });
+
+            // LOGIKA SORTING (MERAH > KUNING > HIJAU)
             const priority = {
                 "Kembalikan Unit": 1,
                 "Pikir - Pikir": 2,
                 "Lanjut Pake Maka": 3
             };
 
-            dataList.sort((a, b) => {
-                return (priority[a.keputusan] || 99) - (priority[b.keputusan] || 99);
-            });
+            // Urutkan data
+            rawData.sort((a, b) => (priority[a.keputusan] || 99) - (priority[b.keputusan] || 99));
+            currentData = rawData; // Update data untuk excel
 
-            dataList.forEach((item) => {
-                const tr = document.createElement('tr');
-                
-                // Tentukan Class Badge untuk warna
+            // Render ke Tabel
+            rawData.forEach(item => {
                 let badgeClass = '';
                 if(item.keputusan === 'Kembalikan Unit') badgeClass = 'status-kembalikan';
                 else if(item.keputusan === 'Pikir - Pikir') badgeClass = 'status-pikir';
                 else badgeClass = 'status-lanjut';
-                
+
+                const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${item.nama}</td>
                     <td><strong>${item.plat}</strong></td>
-                    <td>${item.kategori}</td>
                     <td>${item.jadwal}</td>
                     <td><span class="badge ${badgeClass}">${item.keputusan}</span></td>
                 `;
                 tbody.appendChild(tr);
             });
-        }
+        });
 
-        // Fungsi Download Excel
-        function downloadExcel() {
-            if(dataList.length === 0) {
-                alert("Data kosong!");
-                return;
-            }
-
+        // 3. FUNGSI EXPORT EXCEL
+        document.getElementById('btnExport').addEventListener('click', () => {
+            if(currentData.length === 0) { alert("Data kosong!"); return; }
+            
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Nama,Plat Nomor,Kategori,Status Jadwal,Keputusan Customer\n";
-
-            dataList.forEach(function(row) {
-                let rowString = `${row.nama},${row.plat},${row.kategori},${row.jadwal},${row.keputusan}`;
-                csvContent += rowString + "\n";
+            csvContent += "Nama,Plat,Kategori,Jadwal,Keputusan\n";
+            
+            currentData.forEach(row => {
+                csvContent += `${row.nama},${row.plat},${row.kategori},${row.jadwal},${row.keputusan}\n`;
             });
 
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "List_Motor_MCU_" + new Date().toISOString().slice(0,10) + ".csv");
+            link.setAttribute("download", "Data_MCU_Firebase.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
+        });
+
     </script>
 </body>
 </html>
